@@ -1,7 +1,8 @@
+package models;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class TProcess {
+public abstract class TProcess {
 	TPState pState;
 	int pID;
 	TProcess pParent;
@@ -30,4 +31,7 @@ public class TProcess {
 	public void addChild(TProcess childProcess) {
 		this.pCProcesses.add(childProcess);
 	}
+
+	public abstract void resume();
+	
 }

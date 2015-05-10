@@ -1,5 +1,8 @@
+package models;
 import java.util.List;
 import java.util.PriorityQueue;
+
+import processes.StartStop;
 
 public class TKernel {
 	PriorityQueue<TProcess> OSProcesses;
@@ -21,7 +24,7 @@ public class TKernel {
 		if (this.runnable != null) {
 			this.runnable.run();
 		}
-		TProcess process = new TProcess(this, pState, parent, pPriority, pORElements);
+		StartStop process = new StartStop(this, pState, parent, pPriority, pORElements);
 		this.OSProcesses.add(process);
 		if (parent != null) {
 			parent.addChild(process);

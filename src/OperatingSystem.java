@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+import models.TKernel;
+import models.TPState;
+import models.TElement;
+
 public class OperatingSystem {
 	
 	public static void main(String[] args) {
