@@ -18,6 +18,7 @@ public class OperatingSystem extends JFrame {
 	boolean stopped = false;
 	
 	TKernel kernel = new TKernel();
+	final JButton resumeButton = new JButton("Resume");
 	
 	public static void main(String[] args) {
 		new OperatingSystem();
@@ -34,18 +35,19 @@ public class OperatingSystem extends JFrame {
 		
 		new Thread(kernel).start();
 		
-		JButton button = new JButton("Resume");
-		button.addActionListener((e) -> {
+		resumeButton.setEnabled(false);
+		resumeButton.addActionListener((e) -> {
 			kernel.getLock().lock();
 			kernel.getCond().signalAll();
 			kernel.getLock().unlock();
 		});
-		getContentPane().add(button);
+		getContentPane().add(resumeButton);
 		
 		setVisible(true);
 	}
 	
 	private void update() {
 		System.out.println("Update GUI list");
+		resumeButton.setEnabled(true);
 	}
 }
