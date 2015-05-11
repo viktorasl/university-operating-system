@@ -30,9 +30,10 @@ public class OperatingSystem extends JFrame {
 		setSize(600, 400);
 		setResizable(false);
 		
-		new Thread(() -> {
+		kernel.onUpdate(() -> update());
+		
+		new Thread(() -> {	
 			kernel.startOS();
-			kernel.onUpdate(() -> update());
 		}).start();
 		
 		JButton button = new JButton("Resume");
