@@ -16,8 +16,8 @@ public class OperatingSystem extends JFrame {
 	private static final long serialVersionUID = 1989176057721328389L;
 
 	boolean stopped = false;
-	final Lock lock = new ReentrantLock();
-	final Condition os = lock.newCondition();
+	
+	TKernel kernel = new TKernel();
 	
 	public static void main(String[] args) {
 		new OperatingSystem();
@@ -31,38 +31,19 @@ public class OperatingSystem extends JFrame {
 		setResizable(false);
 		
 		new Thread(() -> {
-			try {
-				startOS();
-			} catch (InterruptedException e) {
-				System.out.println("OS was interrupted");
-			}
+			kernel.startOS();
+			kernel.onUpdate(() -> update());
 		}).start();
 		
 		JButton button = new JButton("Resume");
 		button.addActionListener((e) -> {
-			lock.lock();
-			os.signalAll();
-			lock.unlock();
+			kernel.getLock().lock();
+			kernel.getCond().signalAll();
+			kernel.getLock().unlock();
 		});
 		getContentPane().add(button);
 		
 		setVisible(true);
-	}
-	
-	private void startOS() throws InterruptedException {
-		TKernel kernel = new TKernel();
-		kernel.onUpdate(() -> update());
-		while (true){
-			lock.lock();
-			try {
-				kernel.createProcess(null, TPState.READY, 0, new ArrayList<TElement>());
-				os.await();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally{
-                lock.unlock();
-            }
-		}
 	}
 	
 	private void update() {

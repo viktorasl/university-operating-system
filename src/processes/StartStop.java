@@ -1,6 +1,7 @@
 package processes;
 
 import java.util.List;
+import java.util.concurrent.locks.Condition;
 
 import models.TElement;
 import models.TKernel;
@@ -8,7 +9,7 @@ import models.TPState;
 import models.TProcess;
 
 public class StartStop extends TProcess {
-	
+
 	enum State { PART1, PART2 };
 	
 	State current = State.PART1;
