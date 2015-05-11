@@ -60,6 +60,7 @@ public class TKernel implements Runnable {
 	}
 	
 	private void executeDistributor() {
+		// TODO: lets say each resource is free and all processes are ready
 		for (TProcess p : this.OSProcesses) {
 			p.getLock().lock();
 			p.getCond().signalAll();
@@ -82,6 +83,9 @@ public class TKernel implements Runnable {
 			lock.lock();
 			try {
 				resouceCond.await();
+				if (OSCurrentProc.requestedResource != null) {
+					this.requestResource(OSCurrentProc);
+				}
 				this.executeDistributor();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -124,8 +128,6 @@ public class TKernel implements Runnable {
 		System.out.println("Suspend process");
 		process.setpState(TPState.WAITING);
 		this.OSReadyProc.remove(process);
-		process.suspendProcess();
-		System.out.println("dsadsa");
 	}
 	
 	public void requestResource(TProcess process) {
