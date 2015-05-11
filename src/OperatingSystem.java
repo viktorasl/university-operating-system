@@ -32,9 +32,7 @@ public class OperatingSystem extends JFrame {
 		
 		kernel.onUpdate(() -> update());
 		
-		new Thread(() -> {	
-			kernel.startOS();
-		}).start();
+		new Thread(kernel).start();
 		
 		JButton button = new JButton("Resume");
 		button.addActionListener((e) -> {

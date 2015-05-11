@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import processes.StartStop;
 
-public class TKernel {
+public class TKernel implements Runnable {
 	PriorityQueue<TProcess> OSProcesses;
 	PriorityQueue<TResource> OSResources;
 	PriorityQueue<TProcess> OSReadyProc;
@@ -16,6 +16,7 @@ public class TKernel {
 
 	final Lock lock = new ReentrantLock();
 	final Condition cond = lock.newCondition();
+	final Condition resouceCond = lock.newCondition();
 	
 	Runnable runnable;
 	
@@ -32,7 +33,12 @@ public class TKernel {
 		return cond;
 	}
 	
-	public void startOS() {
+	public Condition getResouceCond() {
+		return resouceCond;
+	}
+	
+	@Override
+	public void run() {
 		createProcess(null, TPState.NEW, 0, new ArrayList<TElement>());
 	}
 	
@@ -54,7 +60,12 @@ public class TKernel {
 	}
 	
 	private void executeDistributor() {
-		
+		for (TProcess p : this.OSProcesses) {
+			p.getLock().lock();
+			p.getCond().signalAll();
+			p.getLock().unlock();
+		}
+		this.executePlanner();
 	}
 	
 	private void executePlanner() {
@@ -64,10 +75,20 @@ public class TKernel {
 		// TODO: Check input procedure
 		if (this.OSReadyProc.size() > 0) {
 			this.startProcess(this.OSReadyProc.element());
-			
 			this.OSCurrentProc.getLock().lock();
 			this.OSCurrentProc.getCond().signalAll();
 			this.OSCurrentProc.getLock().unlock();
+			
+			lock.lock();
+			try {
+				resouceCond.await();
+				this.executeDistributor();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
+			}
 		} else {
 			// TODO: release Idle
 		}
@@ -99,5 +120,17 @@ public class TKernel {
 		this.OSCurrentProc = process;
 	}
 	
+	public void suspendProcess(TProcess process) {
+		System.out.println("Suspend process");
+		process.setpState(TPState.WAITING);
+		this.OSReadyProc.remove(process);
+		process.suspendProcess();
+		System.out.println("dsadsa");
+	}
+	
+	public void requestResource(TProcess process) {
+		suspendProcess(process);
+		this.executeDistributor();
+	}
 	
 }

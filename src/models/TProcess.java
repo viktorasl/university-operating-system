@@ -15,10 +15,12 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 	PriorityQueue<TResource> pCResources;
 	List<TElement> pORElements;
 	
-	TKernel kernel;
+	protected TKernel kernel;
 	static int autoPID = 0;
 	protected final Lock lock = new ReentrantLock();
 	protected final Condition cond = lock.newCondition();
+	
+	protected TResource requestedResource;
 	
 	public TProcess(TKernel kernel, TPState pState, TProcess pParent, int pPriority, List<TElement> pORElements) {
 		this.kernel = kernel;
@@ -37,10 +39,6 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 		return pPriority;
 	}
 	
-//	public TKernel getKernel() {
-//		return kernel;
-//	}
-	
 	public Lock getLock() {
 		return lock;
 	}
@@ -57,6 +55,10 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 		this.pState = pState;
 	}
 	
+	public TResource getRequestedResource() {
+		return requestedResource;
+	}
+	
 	public void addChild(TProcess childProcess) {
 		this.pCProcesses.add(childProcess);
 	}
@@ -69,6 +71,14 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 			return 1;
 		}
 		return 0;
+	}
+	
+	protected void requestResource(TResource resource) {
+		this.requestedResource = resource;
+		this.kernel.getLock().lock();
+		this.kernel.getResouceCond().signalAll();
+		this.kernel.getLock().unlock();
+		suspendProcess();
 	}
 	
 	public void suspendProcess() {
