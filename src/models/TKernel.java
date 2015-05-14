@@ -16,7 +16,6 @@ public class TKernel implements Runnable {
 
 	final Lock lock = new ReentrantLock();
 	final Condition cond = lock.newCondition();
-	final Condition resouceCond = lock.newCondition();
 	
 	Runnable runnable;
 	
@@ -31,10 +30,6 @@ public class TKernel implements Runnable {
 		
 	public Condition getCond() {
 		return cond;
-	}
-	
-	public Condition getResouceCond() {
-		return resouceCond;
 	}
 	
 	@Override
@@ -61,11 +56,6 @@ public class TKernel implements Runnable {
 	
 	private void executeDistributor() {
 		// TODO: lets say each resource is free and all processes are ready
-		for (TProcess p : this.OSProcesses) {
-			p.getLock().lock();
-			p.getCond().signalAll();
-			p.getLock().unlock();
-		}
 		this.executePlanner();
 	}
 	
@@ -76,27 +66,18 @@ public class TKernel implements Runnable {
 		// TODO: Check input procedure
 		if (this.OSReadyProc.size() > 0) {
 			this.startProcess(this.OSReadyProc.element());
-			this.OSCurrentProc.getLock().lock();
-			this.OSCurrentProc.getCond().signalAll();
-			this.OSCurrentProc.getLock().unlock();
-			
-			lock.lock();
-			try {
-				resouceCond.await();
-				if (OSCurrentProc.requestedResource != null) {
-					this.requestResource(OSCurrentProc);
-				}
-				this.executeDistributor();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				lock.unlock();
-			}
+			this.handleProcessInterrupt(this.OSCurrentProc.resume());
 		} else {
 			// TODO: release Idle
 		}
-		this.updated();
+		this.updated(); // TODO: decide where to put this
+	}
+	
+	private void handleProcessInterrupt(ProcessInterrupt processInterrupt) {
+		Class<?> requestedClass = processInterrupt.requestClass;
+		if (requestedClass != null) {
+			System.out.println(requestedClass.toString());
+		}
 	}
 	
 	public void createProcess(TProcess parent, TPState pState, int pPriority, List<TElement> pORElements) {
@@ -105,7 +86,6 @@ public class TKernel implements Runnable {
 		if (parent != null) {
 			parent.addChild(process);
 		}
-		new Thread(process).start();
 		System.out.println("Created process");
 		this.executePlanner();
 		this.activateProcess(process);

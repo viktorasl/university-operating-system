@@ -1,15 +1,9 @@
 import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import models.TKernel;
-import models.TPState;
-import models.TElement;
 
 public class OperatingSystem extends JFrame {
 	

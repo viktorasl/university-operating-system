@@ -1,11 +1,8 @@
 package models;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class TProcess implements Comparable<TProcess>, Runnable {
+public abstract class TProcess implements Comparable<TProcess> {
 	TPState pState;
 	int pID;
 	TProcess pParent;
@@ -17,8 +14,6 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 	
 	protected TKernel kernel;
 	static int autoPID = 0;
-	protected final Lock lock = new ReentrantLock();
-	protected final Condition cond = lock.newCondition();
 	
 	protected TResource requestedResource;
 	
@@ -37,14 +32,6 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 	
 	public int getpPriority() {
 		return pPriority;
-	}
-	
-	public Lock getLock() {
-		return lock;
-	}
-	
-	public Condition getCond() {
-		return cond;
 	}
 	
 	public TPState getpState() {
@@ -73,26 +60,6 @@ public abstract class TProcess implements Comparable<TProcess>, Runnable {
 		return 0;
 	}
 	
-	protected void requestResource(TResource resource) {
-		this.requestedResource = resource;
-		this.kernel.getLock().lock();
-		this.kernel.getResouceCond().signalAll();
-		this.kernel.getLock().unlock();
-		suspendProcess();
-	}
-	
-	public void suspendProcess() {
-		lock.lock();
-		try {
-			cond.await();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			lock.unlock();
-		}
-	}
-	
-	public abstract void run();
+	public abstract ProcessInterrupt resume();
 	
 }
