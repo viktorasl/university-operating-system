@@ -7,6 +7,7 @@ import models.TElement;
 import models.TKernel;
 import models.TPState;
 import models.TProcess;
+import models.TResource.ResourceClass;
 
 public class StartStop extends TProcess {
 
@@ -29,6 +30,9 @@ public class StartStop extends TProcess {
 	}
 	
 	private ProcessInterrupt phase1() {
+		TElement idleElement = new TElement(null, this, null);
+		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
+		
 		System.out.println("Create all system resources");
 		System.out.println("Create all system processes");
 		phase = Phase.PHASE2;

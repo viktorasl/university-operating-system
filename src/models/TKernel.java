@@ -9,9 +9,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import processes.StartStop;
 
 public class TKernel implements Runnable {
-	PriorityQueue<TProcess> OSProcesses;
-	PriorityQueue<TResource> OSResources;
-	PriorityQueue<TProcess> OSReadyProc;
+	final PriorityQueue<TProcess> OSProcesses;
+	final PriorityQueue<TResource> OSResources;
+	final PriorityQueue<TProcess> OSReadyProc;
 	TProcess OSCurrentProc;
 
 	final Lock lock = new ReentrantLock();
@@ -20,8 +20,9 @@ public class TKernel implements Runnable {
 	Runnable runnable;
 	
 	public TKernel() {
-		this.OSProcesses = new PriorityQueue<TProcess>();
-		this.OSReadyProc = new PriorityQueue<TProcess>();
+		OSProcesses = new PriorityQueue<TProcess>();
+		OSResources = new PriorityQueue<TResource>();
+		OSReadyProc = new PriorityQueue<TProcess>();
 	}
 	
 	public Lock getLock() {
@@ -114,6 +115,17 @@ public class TKernel implements Runnable {
 	/*
 	 * Resource primitives
 	 */
+	
+	public void createResource(TProcess process, TResource.ResourceClass resourceClass, boolean reusable, TElement[] availableElements) {
+		TResource resourceDesc = new TResource(process, resourceClass, reusable, availableElements);
+		for (TElement element : availableElements) {
+			element.assignToResource(resourceDesc);
+		}
+		process.getpCResources().add(resourceDesc);
+		OSResources.add(resourceDesc);
+		System.out.println("Created resource " + resourceDesc.getrID());
+	}
+	
 	public ProcessInterrupt requestResource(TProcess process) {
 		suspendProcess(process);
 		return ProcessInterrupt.REQUEST_RESOURCE;

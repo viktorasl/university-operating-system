@@ -15,8 +15,6 @@ public abstract class TProcess implements Comparable<TProcess> {
 	protected TKernel kernel;
 	static int autoPID = 0;
 	
-	protected TResource requestedResource;
-	
 	public TProcess(TKernel kernel, TPState pState, TProcess pParent, int pPriority, List<TElement> pORElements) {
 		this.kernel = kernel;
 		this.pState = pState;
@@ -50,12 +48,12 @@ public abstract class TProcess implements Comparable<TProcess> {
 		this.pState = pState;
 	}
 	
-	public TResource getRequestedResource() {
-		return requestedResource;
-	}
-	
 	public void addChild(TProcess childProcess) {
 		this.pCProcesses.add(childProcess);
+	}
+	
+	public PriorityQueue<TResource> getpCResources() {
+		return pCResources;
 	}
 	
 	@Override
