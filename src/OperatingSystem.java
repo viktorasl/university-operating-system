@@ -8,8 +8,6 @@ import models.TKernel;
 public class OperatingSystem extends JFrame {
 	
 	private static final long serialVersionUID = 1989176057721328389L;
-
-	boolean stopped = false;
 	
 	TKernel kernel = new TKernel();
 	final JButton resumeButton = new JButton("Resume");

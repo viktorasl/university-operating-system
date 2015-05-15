@@ -30,6 +30,14 @@ public abstract class TProcess implements Comparable<TProcess> {
 		this.pCResources = new PriorityQueue<TResource>();
 	}
 	
+	/*
+	 * Getters/Setters
+	 */
+	
+	public int getpID() {
+		return pID;
+	}
+	
 	public int getpPriority() {
 		return pPriority;
 	}

@@ -74,11 +74,12 @@ public class TKernel implements Runnable {
 	}
 	
 	private void handleProcessInterrupt(ProcessInterrupt processInterrupt) {
-		Class<?> requestedClass = processInterrupt.requestClass;
-		if (requestedClass != null) {
-			System.out.println(requestedClass.toString());
-		}
+		
 	}
+	
+	/*
+	 * Processes primitives
+	 */
 	
 	public void createProcess(TProcess parent, TPState pState, int pPriority, List<TElement> pORElements) {
 		StartStop process = new StartStop(this, pState, parent, pPriority, pORElements);
@@ -86,33 +87,36 @@ public class TKernel implements Runnable {
 		if (parent != null) {
 			parent.addChild(process);
 		}
-		System.out.println("Created process");
+		System.out.println("Created process " + + process.getpID());
 		this.executePlanner();
 		this.activateProcess(process);
 	}
 	
-	public void activateProcess(TProcess process) {
-		System.out.println("Activated process");
+	private void activateProcess(TProcess process) {
+		System.out.println("Activated process " + + process.getpID());
 		process.setpState(TPState.READY);
 		this.OSReadyProc.add(process);
 		this.executePlanner();
 	}
 	
-	public void startProcess(TProcess process) {
-		System.out.println("Started process");
+	private void startProcess(TProcess process) {
+		System.out.println("Started process " + + process.getpID());
 		process.setpState(TPState.RUNNING);
 		this.OSCurrentProc = process;
 	}
 	
-	public void suspendProcess(TProcess process) {
-		System.out.println("Suspend process");
+	private void suspendProcess(TProcess process) {
+		System.out.println("Suspend process " + process.getpID());
 		process.setpState(TPState.WAITING);
 		this.OSReadyProc.remove(process);
 	}
 	
-	public void requestResource(TProcess process) {
+	/*
+	 * Resource primitives
+	 */
+	public ProcessInterrupt requestResource(TProcess process) {
 		suspendProcess(process);
-		this.executeDistributor();
+		return ProcessInterrupt.REQUEST_RESOURCE;
 	}
 	
 }

@@ -2,7 +2,6 @@ package processes;
 
 import java.util.List;
 
-import resources.Idle;
 import models.ProcessInterrupt;
 import models.TElement;
 import models.TKernel;
@@ -32,11 +31,8 @@ public class StartStop extends TProcess {
 	private ProcessInterrupt phase1() {
 		System.out.println("Create all system resources");
 		System.out.println("Create all system processes");
-		//TODO: request Idle resource
 		phase = Phase.PHASE2;
-		ProcessInterrupt interrupt = ProcessInterrupt.REQUEST_RESOURCE;
-		interrupt.requestClass = Idle.class;
-		return ProcessInterrupt.REQUEST_RESOURCE;
+		return this.kernel.requestResource(this); //TODO: request Idle resource
 	}
 	
 	private ProcessInterrupt phase2() {
