@@ -1,16 +1,18 @@
 package models;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import models.TResource.ResourceClass;
 import processes.StartStop;
 
 public class TKernel implements Runnable {
 	final PriorityQueue<TProcess> OSProcesses;
-	final PriorityQueue<TResource> OSResources;
+	final List<TResource> OSResources;
 	final PriorityQueue<TProcess> OSReadyProc;
 	TProcess OSCurrentProc;
 
@@ -21,7 +23,7 @@ public class TKernel implements Runnable {
 	
 	public TKernel() {
 		OSProcesses = new PriorityQueue<TProcess>();
-		OSResources = new PriorityQueue<TResource>();
+		OSResources = new LinkedList<TResource>();
 		OSReadyProc = new PriorityQueue<TProcess>();
 	}
 	
@@ -118,15 +120,20 @@ public class TKernel implements Runnable {
 	
 	public void createResource(TProcess process, TResource.ResourceClass resourceClass, boolean reusable, TElement[] availableElements) {
 		TResource resourceDesc = new TResource(process, resourceClass, reusable, availableElements);
-		for (TElement element : availableElements) {
-			element.assignToResource(resourceDesc);
-		}
 		process.getpCResources().add(resourceDesc);
 		OSResources.add(resourceDesc);
 		System.out.println("Created resource " + resourceDesc.getrID());
 	}
 	
-	public ProcessInterrupt requestResource(TProcess process) {
+	public ProcessInterrupt requestResource(TProcess process, ResourceClass resouceClass, String target) {
+		TResource requestedResDesc = null;
+		for (TResource res : OSResources) {
+			if (res.getResourceClass() == resouceClass) {
+				requestedResDesc = res;
+				break;
+			}
+		}
+		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, target));
 		suspendProcess(process);
 		return ProcessInterrupt.REQUEST_RESOURCE;
 	}

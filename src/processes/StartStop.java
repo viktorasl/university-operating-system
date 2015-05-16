@@ -32,11 +32,11 @@ public class StartStop extends TProcess {
 	private ProcessInterrupt phase1() {
 		TElement idleElement = new TElement(null, this, null);
 		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
-		
+		kernel.createResource(this, ResourceClass.SHUTDOWN, false, null);
 		System.out.println("Create all system resources");
 		System.out.println("Create all system processes");
 		phase = Phase.PHASE2;
-		return this.kernel.requestResource(this); //TODO: request Idle resource
+		return this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
 	}
 	
 	private ProcessInterrupt phase2() {

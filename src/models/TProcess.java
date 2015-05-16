@@ -1,4 +1,5 @@
 package models;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -9,7 +10,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 	//TODO: pCPUState
 	int pPriority;
 	PriorityQueue<TProcess> pCProcesses;
-	PriorityQueue<TResource> pCResources;
+	List<TResource> pCResources;
 	List<TElement> pORElements;
 	
 	protected TKernel kernel;
@@ -25,7 +26,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 		this.pID = autoPID++;
 		//TODO: saving CPU registers
 		this.pCProcesses = new PriorityQueue<TProcess>();
-		this.pCResources = new PriorityQueue<TResource>();
+		this.pCResources = new LinkedList<TResource>();
 	}
 	
 	/*
@@ -52,7 +53,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 		this.pCProcesses.add(childProcess);
 	}
 	
-	public PriorityQueue<TResource> getpCResources() {
+	public List<TResource> getpCResources() {
 		return pCResources;
 	}
 	
