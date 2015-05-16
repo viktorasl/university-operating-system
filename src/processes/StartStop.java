@@ -4,6 +4,7 @@ import interrupts.ProcessInterrupt;
 import interrupts.ResourceRequestInterrupt;
 import interrupts.ShutDownInterrupt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import models.TElement;
@@ -14,7 +15,7 @@ import models.TResource.ResourceClass;
 
 public class StartStop extends TProcess {
 
-	private enum Phase { PHASE1, PHASE2 }	
+	private enum Phase { PHASE1, PHASE2, PHASE10 }	
 	
 	private Phase phase = Phase.PHASE1;
 	
@@ -28,6 +29,8 @@ public class StartStop extends TProcess {
 		switch (phase) {
 			case PHASE1: phase1(); break;
 			case PHASE2: phase2(); break;
+			
+			case PHASE10: phase10(); break;
 		}
 	}
 	
@@ -36,12 +39,18 @@ public class StartStop extends TProcess {
 		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
 		kernel.createResource(this, ResourceClass.SHUTDOWN, false, null);
 		System.out.println("Create all system resources");
-		System.out.println("Create all system processes");
+		
 		phase = Phase.PHASE2;
+		kernel.createProcess(new Idle(kernel, TPState.NEW, this, -1, new ArrayList<TElement>()));
+	}
+	
+	private void phase2() throws ResourceRequestInterrupt {
+		System.out.println("Create all system processes");
+		phase = Phase.PHASE10;
 		this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
 	}
 	
-	private void phase2() throws ShutDownInterrupt {
+	private void phase10() throws ShutDownInterrupt {
 		System.out.println("Destroy all system processes");
 		System.out.println("Destroy all system resources");
 		throw new ShutDownInterrupt();

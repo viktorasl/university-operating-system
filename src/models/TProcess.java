@@ -48,6 +48,10 @@ public abstract class TProcess implements Comparable<TProcess> {
 		return pState;
 	}
 	
+	public TProcess getpParent() {
+		return pParent;
+	}
+	
 	public void setpState(TPState pState) {
 		this.pState = pState;
 	}

@@ -44,7 +44,19 @@ public class TKernel implements Runnable {
 	
 	@Override
 	public void run() {
-		createProcess(null, TPState.NEW, 0, new ArrayList<TElement>());
+		createProcess(new StartStop(this, TPState.NEW, null, 1, new ArrayList<TElement>()));
+		while (true) {
+			updated();
+			try {
+				this.OSCurrentProc.resume();
+			} catch (ResourceRequestInterrupt e) {
+				executeDistributor();
+			} catch (ShutDownInterrupt e) {
+				break;
+			} catch (ProcessInterrupt e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void onUpdate(Runnable runnable) {
@@ -73,59 +85,41 @@ public class TKernel implements Runnable {
 		this.executePlanner();
 	}
 	
-	static int ee = 0;
-	
 	private void executePlanner() {
-		int ex = ee++;
-		System.out.println("start planner " + ex);
 		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.WAITING) {
-			// TODO: suspend process
+			suspendProcess(this.OSCurrentProc);
 		}
 		// TODO: Check input procedure
 		if (this.OSReadyProc.size() > 0) {
 			this.startProcess(this.OSReadyProc.element());
-			
-			try {
-				this.OSCurrentProc.resume();
-			} catch (ResourceRequestInterrupt e) {
-				executeDistributor();
-			} catch (ShutDownInterrupt e) {
-				
-			} catch (ProcessInterrupt e) {
-				e.printStackTrace();
-			}
-			
 		} else {
+			System.out.println("Release Idle");
 			// TODO: release Idle
 		}
-		this.updated(); // TODO: decide where to put this
-		System.out.println("end planner " + ex);
 	}
 	
 	/*
 	 * Processes primitives
 	 */
 	
-	public void createProcess(TProcess parent, TPState pState, int pPriority, List<TElement> pORElements) {
-		StartStop process = new StartStop(this, pState, parent, pPriority, pORElements);
+	public void createProcess(TProcess process) {
 		this.OSProcesses.add(process);
-		if (parent != null) {
-			parent.addChild(process);
+		if (process.getpParent() != null) {
+			process.getpParent().addChild(process);
 		}
-		System.out.println("Created process " + + process.getpID());
-		this.executePlanner();
+		System.out.println("Created process " + process.getpID());
 		this.activateProcess(process);
 	}
 	
 	private void activateProcess(TProcess process) {
-		System.out.println("Activated process " + + process.getpID());
+		System.out.println("Activated process " + process.getpID());
 		process.setpState(TPState.READY);
 		this.OSReadyProc.add(process);
 		this.executePlanner();
 	}
 	
 	private void startProcess(TProcess process) {
-		System.out.println("Started process " + + process.getpID());
+		System.out.println("Started process " + process.getpID());
 		process.setpState(TPState.RUNNING);
 		this.OSCurrentProc = process;
 	}
@@ -133,7 +127,9 @@ public class TKernel implements Runnable {
 	private void suspendProcess(TProcess process) {
 		System.out.println("Suspend process " + process.getpID());
 		process.setpState(TPState.WAITING);
+		System.out.println("Ready processes " + OSReadyProc.size());
 		this.OSReadyProc.remove(process);
+		System.out.println("Ready processes " + OSReadyProc.size());
 	}
 	
 	/*
