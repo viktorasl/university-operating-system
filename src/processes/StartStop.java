@@ -26,6 +26,7 @@ public class StartStop extends TProcess {
 	
 	@Override
 	public void resume() throws ProcessInterrupt {
+		System.out.println(getExternalName() + ":" + phase.toString());
 		switch (phase) {
 			case PHASE1: phase1(); break;
 			case PHASE2: phase2(); break;
@@ -43,14 +44,12 @@ public class StartStop extends TProcess {
 		TElement idleElement = new TElement(null, this, null);
 		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
 		kernel.createResource(this, ResourceClass.SHUTDOWN, false, null);
-		System.out.println("Create all system resources");
 		
 		phase = Phase.PHASE2;
 		kernel.createProcess(new Idle(kernel, TPState.NEW, this, -1, new ArrayList<TElement>()));
 	}
 	
 	private void phase2() throws ResourceRequestInterrupt {
-		System.out.println("Create all system processes");
 		phase = Phase.PHASE10;
 		this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
 	}

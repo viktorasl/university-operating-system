@@ -54,12 +54,9 @@ public class TKernel implements Runnable {
 				this.OSCurrentProc.resume();
 			} catch (ResourceRequestInterrupt e) {
 				e.printStackTrace();
-			} catch (ShutDownInterrupt e) {
-				break;
-			} catch (ProcessInterrupt e) {
-				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
+				break;
 			}
 		}
 	}
@@ -87,6 +84,8 @@ public class TKernel implements Runnable {
 	
 	private void executeDistributor(TResource resource) {
 		updated();
+		System.out.println(resource.getrWaitProcList().size() + " waiting proceses and " + resource.getrAccElem().size() + " available elements");
+		
 		if (resource.getrWaitProcList().size() > 0 && resource.getrAccElem().size() > 0) {
 			List<TProcess> servedProcesses = new LinkedList<TProcess>();
 			
@@ -109,15 +108,15 @@ public class TKernel implements Runnable {
 					process.setpState(TPState.READY);
 					OSReadyProc.add(process);
 				}
-				executePlanner();
 			}
 		}
+		executePlanner();
 	}
 	
 	private void executePlanner() {
 		updated();
-		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.WAITING) {
-			suspendProcess(this.OSCurrentProc);
+		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.READY) {
+			this.OSCurrentProc.setpState(TPState.READY);
 		}
 		// TODO: Check input procedure
 		if (this.OSReadyProc.size() > 0) {
@@ -159,10 +158,8 @@ public class TKernel implements Runnable {
 	private void suspendProcess(TProcess process) {
 		System.out.println("Suspend process " + process.getExternalName());
 		process.setpState(TPState.WAITING);
-		System.out.println("Ready processes " + OSReadyProc.size());
 		this.OSReadyProc.remove(process);
 		OSCurrentProc = null;
-		System.out.println("Ready processes " + OSReadyProc.size());
 	}
 	
 	/*

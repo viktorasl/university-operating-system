@@ -19,13 +19,14 @@ public class Idle extends TProcess {
 	}
 
 	@Override
-	public void resume() throws ProcessInterrupt {
-		phase1();
+	public String getExternalName() {
+		return "Idle";
 	}
 	
 	@Override
-	public String getExternalName() {
-		return "Idle";
+	public void resume() throws ProcessInterrupt {
+		System.out.println(getExternalName() + ":PHASE1");
+		phase1();
 	}
 	
 	public void phase1() throws ResourceRequestInterrupt {
