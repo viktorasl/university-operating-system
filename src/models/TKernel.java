@@ -43,18 +43,12 @@ public class TKernel implements Runnable {
 		return OSProcesses.toArray(new TProcess[OSProcesses.size()]);
 	}
 	
-	int i = 1;
-	
 	@Override
 	public void run() {
-		createProcess(new StartStop(this, TPState.NEW, null, 1, new ArrayList<TElement>()));
+		createProcess(new StartStop(this, TPState.NEW, null, 2, new ArrayList<TElement>()));
 		while (true) {
 			try {
-				
-				if (i++ % 6 == 0) {
-					releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "SHTDW"));
-				}
-				
+				System.out.println("RESUME " + OSCurrentProc.getExternalName());
 				this.OSCurrentProc.resume();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -86,7 +80,7 @@ public class TKernel implements Runnable {
 	
 	private void executeDistributor(TResource resource) {
 		updated();
-		System.out.println(resource.getrWaitProcList().size() + " waiting proceses and " + resource.getrAccElem().size() + " available elements");
+		System.out.println(resource.getResourceClass().toString() +":"+ resource.getrWaitProcList().size() + " waiting proceses and " + resource.getrAccElem().size() + " available elements");
 		
 		if (resource.getrWaitProcList().size() > 0 && resource.getrAccElem().size() > 0) {
 			List<TProcess> servedProcesses = new LinkedList<TProcess>();
@@ -112,12 +106,20 @@ public class TKernel implements Runnable {
 				resource.getrAccElem().removeAll(usedElements);
 				
 				for (TProcess process : servedProcesses) {
-					process.setpState(TPState.READY);
-					OSReadyProc.add(process);
+					activateProcess(process);
 				}
 			}
 		}
 		executePlanner();
+	}
+	
+	int i = 1;
+	private boolean checkInput() {
+		if (i++ % 4 == 0) {
+			releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "SHTDW"));
+			return true;
+		}
+		return false;
 	}
 	
 	private void executePlanner() {
@@ -125,12 +127,12 @@ public class TKernel implements Runnable {
 		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.READY) {
 			this.OSCurrentProc.setpState(TPState.READY);
 		}
-		// TODO: Check input procedure
-		if (this.OSReadyProc.size() > 0) {
-			this.startProcess(this.OSReadyProc.element());
-		} else {
-			System.out.println("Release Idle");
-			releaseResource(ResourceClass.IDLE, new TElement(null, null, null));
+		if (!checkInput()) {
+			if (this.OSReadyProc.size() > 0) {
+				this.startProcess(this.OSReadyProc.element());
+			} else {
+				releaseResource(ResourceClass.IDLE, new TElement(null, null, null));
+			}
 		}
 	}
 	
@@ -145,13 +147,13 @@ public class TKernel implements Runnable {
 		}
 		System.out.println("Created process " + process.getExternalName());
 		this.activateProcess(process);
+		this.executePlanner();
 	}
 	
 	private void activateProcess(TProcess process) {
 		System.out.println("Activated process " + process.getExternalName());
 		process.setpState(TPState.READY);
 		this.OSReadyProc.add(process);
-		this.executePlanner();
 	}
 	
 	private void startProcess(TProcess process) {
@@ -189,6 +191,7 @@ public class TKernel implements Runnable {
 			}
 		}
 		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, target));
+		System.out.println("Requested resource descriptor " + requestedResDesc.getResourceClass().toString());
 		suspendProcess(process);
 		executeDistributor(requestedResDesc);
 	}
@@ -203,7 +206,7 @@ public class TKernel implements Runnable {
 		}
 		element.assignToResource(releaseResDesc);
 		releaseResDesc.getrAccElem().add(element);
-		System.out.println("Release resource " + releaseResDesc.getrID());
+		System.out.println("Release resource " + releaseResDesc.getResourceClass().toString());
 		executeDistributor(releaseResDesc);
 	}
 	

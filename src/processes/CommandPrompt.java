@@ -39,8 +39,10 @@ public class CommandPrompt extends TProcess {
 	
 	private void phase2() throws Exception {
 		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
-		System.out.println(inputedLine.getInfo());
-		phase1();
+		phase = Phase.PHASE1;
+		if (inputedLine.getInfo().equalsIgnoreCase("SHTDW")) {
+			kernel.releaseResource(ResourceClass.SHUTDOWN, new TElement(null, this, null));
+		}
 	}
 
 }
