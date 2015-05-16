@@ -1,6 +1,7 @@
 package models;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TResource {
@@ -25,7 +26,7 @@ public class TResource {
 		this.resourceClass = resourceClass;
 		rCreator = process;
 		rReusable = reusable;
-		rAccElem = availableElements != null ? Arrays.asList(availableElements) : new ArrayList<TElement>();
+		rAccElem = availableElements != null ? new ArrayList<TElement>(Arrays.asList(availableElements)): new ArrayList<TElement>();
 		for (TElement element : rAccElem) {
 			element.assignToResource(this);
 		}
@@ -45,12 +46,16 @@ public class TResource {
 		return rCreator;
 	}
 	
-	public List<TElement> getrAccElem() {
-		return rAccElem;
+	public ArrayList<TElement> getrAccElem() {
+		return (ArrayList<TElement>) rAccElem;
 	}
 	
 	public List<TWaitingProc> getrWaitProcList() {
 		return rWaitProcList;
+	}
+	
+	public boolean isrReusable() {
+		return rReusable;
 	}
 	
 }

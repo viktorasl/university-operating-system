@@ -9,4 +9,8 @@ public class TWaitingProc {
 		this.receiver = receiver;
 		this.target = target;
 	}
+	
+	public TProcess getReceiver() {
+		return receiver;
+	}
 }

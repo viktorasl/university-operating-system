@@ -12,6 +12,14 @@ public class TElement {
 		this.info = info;
 	}
 	
+	public TResource getResource() {
+		return resource;
+	}
+	
+	public TProcess getProc() {
+		return proc;
+	}
+	
 	public void assignToResource(TResource resource) {
 		this.resource = resource;
 	}

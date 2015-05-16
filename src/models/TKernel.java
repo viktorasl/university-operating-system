@@ -50,14 +50,15 @@ public class TKernel implements Runnable {
 	public void run() {
 		createProcess(new StartStop(this, TPState.NEW, null, 1, new ArrayList<TElement>()));
 		while (true) {
-			updated();
 			try {
 				this.OSCurrentProc.resume();
 			} catch (ResourceRequestInterrupt e) {
-				executeDistributor();
+				e.printStackTrace();
 			} catch (ShutDownInterrupt e) {
 				break;
 			} catch (ProcessInterrupt e) {
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -84,12 +85,37 @@ public class TKernel implements Runnable {
 	 * Operating system core procedures
 	 */
 	
-	private void executeDistributor() {
-		// TODO: lets say each resource is free and all processes are ready
-		this.executePlanner();
+	private void executeDistributor(TResource resource) {
+		updated();
+		if (resource.getrWaitProcList().size() > 0 && resource.getrAccElem().size() > 0) {
+			List<TProcess> servedProcesses = new LinkedList<TProcess>();
+			
+			for (TElement element : resource.getrAccElem()) {
+				for (TWaitingProc waitingProc : resource.getrWaitProcList()) {
+					TProcess dedicatedProc = element.getProc();
+					if (dedicatedProc == waitingProc.getReceiver() || dedicatedProc == null) {
+						TProcess receiver = waitingProc.getReceiver();
+						receiver.getpORElements().add(element);
+						
+						resource.getrWaitProcList().remove(waitingProc);
+						servedProcesses.add(receiver);
+						break;
+					}
+				}	
+			}
+			
+			if (servedProcesses.size() > 0) {
+				for (TProcess process : servedProcesses) {
+					process.setpState(TPState.READY);
+					OSReadyProc.add(process);
+				}
+				executePlanner();
+			}
+		}
 	}
 	
 	private void executePlanner() {
+		updated();
 		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.WAITING) {
 			suspendProcess(this.OSCurrentProc);
 		}
@@ -98,7 +124,7 @@ public class TKernel implements Runnable {
 			this.startProcess(this.OSReadyProc.element());
 		} else {
 			System.out.println("Release Idle");
-			// TODO: release Idle
+			releaseResource(ResourceClass.IDLE, new TElement(null, null, null));
 		}
 	}
 	
@@ -126,6 +152,8 @@ public class TKernel implements Runnable {
 		System.out.println("Started process " + process.getExternalName());
 		process.setpState(TPState.RUNNING);
 		this.OSCurrentProc = process;
+		
+		updated();
 	}
 	
 	private void suspendProcess(TProcess process) {
@@ -133,6 +161,7 @@ public class TKernel implements Runnable {
 		process.setpState(TPState.WAITING);
 		System.out.println("Ready processes " + OSReadyProc.size());
 		this.OSReadyProc.remove(process);
+		OSCurrentProc = null;
 		System.out.println("Ready processes " + OSReadyProc.size());
 	}
 	
@@ -157,7 +186,20 @@ public class TKernel implements Runnable {
 		}
 		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, target));
 		suspendProcess(process);
-		throw new ResourceRequestInterrupt();
+		executeDistributor(requestedResDesc);
+	}
+	
+	public void releaseResource(ResourceClass resourceClass, TElement element) {
+		TResource releaseResDesc = null;
+		for (TResource res : OSResources) {
+			if (res.getResourceClass() == resourceClass) {
+				releaseResDesc = res;
+				break;
+			}
+		}
+		System.out.println("Release resource " + releaseResDesc.getrID());
+		releaseResDesc.getrAccElem().add(element);
+		executeDistributor(releaseResDesc);
 	}
 	
 }

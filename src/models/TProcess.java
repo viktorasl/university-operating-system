@@ -65,6 +65,10 @@ public abstract class TProcess implements Comparable<TProcess> {
 		return pCResources;
 	}
 	
+	public List<TElement> getpORElements() {
+		return pORElements;
+	}
+	
 	@Override
 	public int compareTo(TProcess o) {
 		if (o.getpPriority() < this.getpPriority()) {
