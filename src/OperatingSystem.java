@@ -2,6 +2,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTable;
 
 import models.TKernel;
 
@@ -9,8 +10,9 @@ public class OperatingSystem extends JFrame {
 	
 	private static final long serialVersionUID = 1989176057721328389L;
 	
-	TKernel kernel = new TKernel();
+	final TKernel kernel = new TKernel();
 	final JButton resumeButton = new JButton("Resume");
+	final ProcessesTableModel processesTable;
 	
 	public static void main(String[] args) {
 		new OperatingSystem();
@@ -23,6 +25,8 @@ public class OperatingSystem extends JFrame {
 		setSize(600, 400);
 		setResizable(false);
 		
+		processesTable = new ProcessesTableModel();
+		getContentPane().add(new JTable(processesTable));
 		kernel.onUpdate(() -> update());
 		
 		new Thread(kernel).start();
@@ -39,6 +43,8 @@ public class OperatingSystem extends JFrame {
 	}
 	
 	private void update() {
+		processesTable.setProcesses(kernel.getOSProcesses());
+		processesTable.fireTableDataChanged();
 		System.out.println("Update GUI list");
 		resumeButton.setEnabled(true);
 	}

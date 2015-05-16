@@ -1,6 +1,5 @@
 package models;
 import interrupts.ProcessInterrupt;
-import interrupts.ResourceRequestInterrupt;
 
 import java.util.LinkedList;
 import java.util.List;

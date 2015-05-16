@@ -42,6 +42,10 @@ public class TKernel implements Runnable {
 		return cond;
 	}
 	
+	public TProcess[] getOSProcesses() {
+		return OSProcesses.toArray(new TProcess[OSProcesses.size()]);
+	}
+	
 	@Override
 	public void run() {
 		createProcess(new StartStop(this, TPState.NEW, null, 1, new ArrayList<TElement>()));
