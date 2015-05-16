@@ -9,6 +9,13 @@ public class TResource {
 		IDLE,
 		SHUTDOWN,
 		INPUTEDLINE,
+		LOADPROGRAM,
+		GENERALMEMORY,
+		CHANNELDEVICE,
+		PROGRAMVALID,
+		LINETOPRINT,
+		INTERRUPTINFO,
+		INTERRUPT,
 	}
 	
 	final ResourceClass resourceClass;

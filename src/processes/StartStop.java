@@ -39,10 +39,9 @@ public class StartStop extends TProcess {
 	}
 	
 	private void phase1() {
-		TElement idleElement = new TElement(null, this, null);
-		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
-		kernel.createResource(this, ResourceClass.SHUTDOWN, false, null);
-		kernel.createResource(this, ResourceClass.INPUTEDLINE, false, null);
+		for (ResourceClass resClass : ResourceClass.values()) {
+			kernel.createResource(this, resClass, true, null);
+		}
 		
 		phase = Phase.PHASE2;
 		kernel.createProcess(new Idle(kernel, TPState.NEW, this, -1, new ArrayList<TElement>()));
