@@ -96,7 +96,7 @@ public class TKernel implements Runnable {
 			for (TElement element : resource.getrAccElem()) {
 				for (TWaitingProc waitingProc : resource.getrWaitProcList()) {
 					TProcess dedicatedProc = element.getProc();
-					if (dedicatedProc == waitingProc.getReceiver() || dedicatedProc == null) {
+					if (dedicatedProc == waitingProc.getReceiver() || dedicatedProc == null && !servedProcesses.contains(waitingProc.getReceiver())) {
 						TProcess receiver = waitingProc.getReceiver();
 						receiver.getpORElements().add(element);
 						
