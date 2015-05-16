@@ -107,25 +107,25 @@ public class TKernel implements Runnable {
 		if (process.getpParent() != null) {
 			process.getpParent().addChild(process);
 		}
-		System.out.println("Created process " + process.getpID());
+		System.out.println("Created process " + process.getExternalName());
 		this.activateProcess(process);
 	}
 	
 	private void activateProcess(TProcess process) {
-		System.out.println("Activated process " + process.getpID());
+		System.out.println("Activated process " + process.getExternalName());
 		process.setpState(TPState.READY);
 		this.OSReadyProc.add(process);
 		this.executePlanner();
 	}
 	
 	private void startProcess(TProcess process) {
-		System.out.println("Started process " + process.getpID());
+		System.out.println("Started process " + process.getExternalName());
 		process.setpState(TPState.RUNNING);
 		this.OSCurrentProc = process;
 	}
 	
 	private void suspendProcess(TProcess process) {
-		System.out.println("Suspend process " + process.getpID());
+		System.out.println("Suspend process " + process.getExternalName());
 		process.setpState(TPState.WAITING);
 		System.out.println("Ready processes " + OSReadyProc.size());
 		this.OSReadyProc.remove(process);

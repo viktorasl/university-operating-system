@@ -12,7 +12,7 @@ import models.TProcess;
 import models.TResource.ResourceClass;
 
 public class Idle extends TProcess {
-
+	
 	public Idle(TKernel kernel, TPState pState, TProcess pParent,
 			int pPriority, List<TElement> pORElements) {
 		super(kernel, pState, pParent, pPriority, pORElements);
@@ -21,6 +21,11 @@ public class Idle extends TProcess {
 	@Override
 	public void resume() throws ProcessInterrupt {
 		phase1();
+	}
+	
+	@Override
+	public String getExternalName() {
+		return "Idle";
 	}
 	
 	public void phase1() throws ResourceRequestInterrupt {

@@ -36,6 +36,8 @@ public abstract class TProcess implements Comparable<TProcess> {
 	 * Getters/Setters
 	 */
 	
+	public abstract String getExternalName();
+	
 	public int getpID() {
 		return pID;
 	}

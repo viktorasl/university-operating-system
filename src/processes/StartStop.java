@@ -34,6 +34,11 @@ public class StartStop extends TProcess {
 		}
 	}
 	
+	@Override
+	public String getExternalName() {
+		return "StartStop";
+	}
+	
 	private void phase1() throws ResourceRequestInterrupt {
 		TElement idleElement = new TElement(null, this, null);
 		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
