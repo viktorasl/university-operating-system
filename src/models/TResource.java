@@ -1,14 +1,14 @@
 package models;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class TResource {
 	
 	public enum ResourceClass {
 		IDLE,
-		SHUTDOWN
+		SHUTDOWN,
+		INPUTEDLINE,
 	}
 	
 	final ResourceClass resourceClass;

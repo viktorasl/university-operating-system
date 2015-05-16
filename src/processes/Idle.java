@@ -1,8 +1,5 @@
 package processes;
 
-import interrupts.ProcessInterrupt;
-import interrupts.ResourceRequestInterrupt;
-
 import java.util.List;
 
 import models.TElement;
@@ -24,12 +21,12 @@ public class Idle extends TProcess {
 	}
 	
 	@Override
-	public void resume() throws ProcessInterrupt {
+	public void resume() {
 		System.out.println(getExternalName() + ":PHASE1");
 		phase1();
 	}
 	
-	public void phase1() throws ResourceRequestInterrupt {
+	public void phase1() {
 		kernel.requestResource(this, ResourceClass.IDLE, null);
 	}
 

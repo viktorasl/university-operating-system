@@ -45,7 +45,6 @@ public class OperatingSystem extends JFrame {
 	private void update() {
 		processesTable.setProcesses(kernel.getOSProcesses());
 		processesTable.fireTableDataChanged();
-		System.out.println("Update GUI list");
 		resumeButton.setEnabled(true);
 	}
 }

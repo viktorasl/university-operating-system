@@ -20,6 +20,10 @@ public class TElement {
 		return proc;
 	}
 	
+	public String getInfo() {
+		return info;
+	}
+	
 	public void assignToResource(TResource resource) {
 		this.resource = resource;
 	}

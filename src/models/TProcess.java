@@ -1,9 +1,10 @@
 package models;
-import interrupts.ProcessInterrupt;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+
+import models.TResource.ResourceClass;
 
 public abstract class TProcess implements Comparable<TProcess> {
 	TPState pState;
@@ -79,6 +80,16 @@ public abstract class TProcess implements Comparable<TProcess> {
 		return 0;
 	}
 	
-	public abstract void resume() throws ProcessInterrupt;
+	protected TElement getElement(ResourceClass resClass) throws Exception {
+		for (TElement element : pORElements) {
+			if (element.getResource().getResourceClass() == resClass) {
+				pORElements.remove(element);
+				return element;
+			}
+		}
+		throw new Exception();
+	}
+	
+	public abstract void resume() throws Exception;
 	
 }

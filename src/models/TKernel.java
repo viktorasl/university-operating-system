@@ -1,7 +1,4 @@
 package models;
-import interrupts.ProcessInterrupt;
-import interrupts.ResourceRequestInterrupt;
-import interrupts.ShutDownInterrupt;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,14 +43,19 @@ public class TKernel implements Runnable {
 		return OSProcesses.toArray(new TProcess[OSProcesses.size()]);
 	}
 	
+	int i = 1;
+	
 	@Override
 	public void run() {
 		createProcess(new StartStop(this, TPState.NEW, null, 1, new ArrayList<TElement>()));
 		while (true) {
 			try {
+				
+				if (i++ % 6 == 0) {
+					releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "SHTDW"));
+				}
+				
 				this.OSCurrentProc.resume();
-			} catch (ResourceRequestInterrupt e) {
-				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 				break;
@@ -89,6 +91,8 @@ public class TKernel implements Runnable {
 		if (resource.getrWaitProcList().size() > 0 && resource.getrAccElem().size() > 0) {
 			List<TProcess> servedProcesses = new LinkedList<TProcess>();
 			
+			List<TElement> usedElements = new LinkedList<TElement>();
+			
 			for (TElement element : resource.getrAccElem()) {
 				for (TWaitingProc waitingProc : resource.getrWaitProcList()) {
 					TProcess dedicatedProc = element.getProc();
@@ -96,6 +100,7 @@ public class TKernel implements Runnable {
 						TProcess receiver = waitingProc.getReceiver();
 						receiver.getpORElements().add(element);
 						
+						usedElements.add(element);
 						resource.getrWaitProcList().remove(waitingProc);
 						servedProcesses.add(receiver);
 						break;
@@ -104,6 +109,8 @@ public class TKernel implements Runnable {
 			}
 			
 			if (servedProcesses.size() > 0) {
+				resource.getrAccElem().removeAll(usedElements);
+				
 				for (TProcess process : servedProcesses) {
 					process.setpState(TPState.READY);
 					OSReadyProc.add(process);
@@ -173,7 +180,7 @@ public class TKernel implements Runnable {
 		System.out.println("Created resource descriptor " + resourceDesc.getrID());
 	}
 	
-	public void requestResource(TProcess process, ResourceClass resouceClass, String target) throws ResourceRequestInterrupt {
+	public void requestResource(TProcess process, ResourceClass resouceClass, String target) {
 		TResource requestedResDesc = null;
 		for (TResource res : OSResources) {
 			if (res.getResourceClass() == resouceClass) {
@@ -194,8 +201,9 @@ public class TKernel implements Runnable {
 				break;
 			}
 		}
-		System.out.println("Release resource " + releaseResDesc.getrID());
+		element.assignToResource(releaseResDesc);
 		releaseResDesc.getrAccElem().add(element);
+		System.out.println("Release resource " + releaseResDesc.getrID());
 		executeDistributor(releaseResDesc);
 	}
 	
