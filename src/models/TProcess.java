@@ -1,4 +1,7 @@
 package models;
+import interrupts.ProcessInterrupt;
+import interrupts.ResourceRequestInterrupt;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -67,6 +70,6 @@ public abstract class TProcess implements Comparable<TProcess> {
 		return 0;
 	}
 	
-	public abstract ProcessInterrupt resume();
+	public abstract void resume() throws ProcessInterrupt;
 	
 }

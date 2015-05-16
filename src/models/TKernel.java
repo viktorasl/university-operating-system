@@ -1,4 +1,8 @@
 package models;
+import interrupts.ProcessInterrupt;
+import interrupts.ResourceRequestInterrupt;
+import interrupts.ShutDownInterrupt;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +31,9 @@ public class TKernel implements Runnable {
 		OSReadyProc = new PriorityQueue<TProcess>();
 	}
 	
+	/*
+	 * Getters/Setters
+	 */
 	public Lock getLock() {
 		return lock;
 	}
@@ -57,27 +64,42 @@ public class TKernel implements Runnable {
 		lock.unlock();
 	}
 	
+	/*
+	 * Operating system core procedures
+	 */
+	
 	private void executeDistributor() {
 		// TODO: lets say each resource is free and all processes are ready
 		this.executePlanner();
 	}
 	
+	static int ee = 0;
+	
 	private void executePlanner() {
+		int ex = ee++;
+		System.out.println("start planner " + ex);
 		if (this.OSCurrentProc != null && this.OSCurrentProc.getpState() != TPState.WAITING) {
 			// TODO: suspend process
 		}
 		// TODO: Check input procedure
 		if (this.OSReadyProc.size() > 0) {
 			this.startProcess(this.OSReadyProc.element());
-			this.handleProcessInterrupt(this.OSCurrentProc.resume());
+			
+			try {
+				this.OSCurrentProc.resume();
+			} catch (ResourceRequestInterrupt e) {
+				executeDistributor();
+			} catch (ShutDownInterrupt e) {
+				
+			} catch (ProcessInterrupt e) {
+				e.printStackTrace();
+			}
+			
 		} else {
 			// TODO: release Idle
 		}
 		this.updated(); // TODO: decide where to put this
-	}
-	
-	private void handleProcessInterrupt(ProcessInterrupt processInterrupt) {
-		
+		System.out.println("end planner " + ex);
 	}
 	
 	/*
@@ -122,10 +144,10 @@ public class TKernel implements Runnable {
 		TResource resourceDesc = new TResource(process, resourceClass, reusable, availableElements);
 		process.getpCResources().add(resourceDesc);
 		OSResources.add(resourceDesc);
-		System.out.println("Created resource " + resourceDesc.getrID());
+		System.out.println("Created resource descriptor " + resourceDesc.getrID());
 	}
 	
-	public ProcessInterrupt requestResource(TProcess process, ResourceClass resouceClass, String target) {
+	public void requestResource(TProcess process, ResourceClass resouceClass, String target) throws ResourceRequestInterrupt {
 		TResource requestedResDesc = null;
 		for (TResource res : OSResources) {
 			if (res.getResourceClass() == resouceClass) {
@@ -135,7 +157,7 @@ public class TKernel implements Runnable {
 		}
 		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, target));
 		suspendProcess(process);
-		return ProcessInterrupt.REQUEST_RESOURCE;
+		throw new ResourceRequestInterrupt();
 	}
 	
 }

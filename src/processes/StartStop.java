@@ -1,8 +1,11 @@
 package processes;
 
+import interrupts.ProcessInterrupt;
+import interrupts.ResourceRequestInterrupt;
+import interrupts.ShutDownInterrupt;
+
 import java.util.List;
 
-import models.ProcessInterrupt;
 import models.TElement;
 import models.TKernel;
 import models.TPState;
@@ -21,28 +24,27 @@ public class StartStop extends TProcess {
 	}
 	
 	@Override
-	public ProcessInterrupt resume() {
+	public void resume() throws ProcessInterrupt {
 		switch (phase) {
-			case PHASE1: return phase1();
-			case PHASE2: return phase2();
+			case PHASE1: phase1(); break;
+			case PHASE2: phase2(); break;
 		}
-		return null;
 	}
 	
-	private ProcessInterrupt phase1() {
+	private void phase1() throws ResourceRequestInterrupt {
 		TElement idleElement = new TElement(null, this, null);
 		kernel.createResource(this, ResourceClass.IDLE, true, new TElement[]{ idleElement });
 		kernel.createResource(this, ResourceClass.SHUTDOWN, false, null);
 		System.out.println("Create all system resources");
 		System.out.println("Create all system processes");
 		phase = Phase.PHASE2;
-		return this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
+		this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
 	}
 	
-	private ProcessInterrupt phase2() {
+	private void phase2() throws ShutDownInterrupt {
 		System.out.println("Destroy all system processes");
 		System.out.println("Destroy all system resources");
-		return ProcessInterrupt.SHUT_DOWN;
+		throw new ShutDownInterrupt();
 	}
 	
 }
