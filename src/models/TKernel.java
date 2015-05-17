@@ -115,8 +115,9 @@ public class TKernel implements Runnable {
 	
 	int i = 1;
 	private boolean checkInput() {
-		if (i++ % 4 == 0) {
-			releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "SHTDW"));
+		if (i++ % 10 == 0) {
+			releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, "Random string to print"));
+//			releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "SHTDW"));
 			return true;
 		}
 		return false;
