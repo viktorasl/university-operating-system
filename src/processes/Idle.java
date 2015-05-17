@@ -15,17 +15,6 @@ public class Idle extends TProcess {
 		super(kernel, pState, pParent, pPriority, pORElements);
 	}
 
-	@Override
-	public String getExternalName() {
-		return "Idle";
-	}
-	
-	@Override
-	public void resume() {
-		System.out.println(getExternalName() + ":PHASE1");
-		phase1();
-	}
-	
 	public void phase1() {
 		kernel.requestResource(this, ResourceClass.IDLE, null);
 	}

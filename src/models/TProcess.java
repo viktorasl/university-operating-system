@@ -1,5 +1,6 @@
 package models;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -15,6 +16,8 @@ public abstract class TProcess implements Comparable<TProcess> {
 	PriorityQueue<TProcess> pCProcesses;
 	List<TResource> pCResources;
 	List<TElement> pORElements;
+	
+	protected int phase = 1;
 	
 	protected TKernel kernel;
 	static int autoPID = 0;
@@ -36,7 +39,9 @@ public abstract class TProcess implements Comparable<TProcess> {
 	 * Getters/Setters
 	 */
 	
-	public abstract String getExternalName();
+	public String getExternalName() {
+		return getClass().getSimpleName();
+	}
 	
 	public int getpID() {
 		return pID;
@@ -90,6 +95,11 @@ public abstract class TProcess implements Comparable<TProcess> {
 		throw new Exception();
 	}
 	
-	public abstract void resume() throws Exception;
+	public void resume() throws Exception {
+		String methodName = "phase" + phase;
+		System.out.println(getExternalName() + ":" + methodName);
+		Method method = this.getClass().getDeclaredMethod( methodName );
+		method.invoke(this);
+	}
 	
 }
