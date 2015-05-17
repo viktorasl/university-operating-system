@@ -23,8 +23,12 @@ public class CommandPrompt extends TProcess {
 	public void phase2() throws Exception {
 		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
 		phase = 1;
-		if (inputedLine.getInfo().equalsIgnoreCase("SHTDW")) {
+		String info = inputedLine.getInfo();
+		if (info.equalsIgnoreCase("SHTDW")) {
 			kernel.releaseResource(ResourceClass.SHUTDOWN, new TElement(null, this, null));
+		} else if (info.startsWith("LD")) {
+			String address = info.substring(2, info.length() - 1);
+			kernel.releaseResource(ResourceClass.LOADPROGRAM, new TElement(null, this, address));
 		}
 	}
 
