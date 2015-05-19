@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.swing.JTextArea;
+
 import models.TResource.ResourceClass;
 import processes.StartStop;
 
@@ -19,13 +21,18 @@ public class TKernel implements Runnable {
 
 	final Lock lock = new ReentrantLock();
 	final Condition cond = lock.newCondition();
+	boolean stepRun;
+	JTextArea printer;
+	String inputedLine;
 	
 	Runnable runnable;
 	
-	public TKernel() {
+	public TKernel(boolean stepRun) {
 		OSProcesses = new PriorityQueue<TProcess>();
 		OSResources = new LinkedList<TResource>();
 		OSReadyProc = new PriorityQueue<TProcess>();
+		
+		this.stepRun = stepRun;
 	}
 	
 	/*
@@ -41,6 +48,24 @@ public class TKernel implements Runnable {
 	
 	public TProcess[] getOSProcesses() {
 		return OSProcesses.toArray(new TProcess[OSProcesses.size()]);
+	}
+	
+	public void print (String text) {
+		if (this.printer != null) {
+			this.printer.setText(text + "\n" + this.printer.getText());
+		}
+	}
+	
+	public void setPrinter(JTextArea printer) {
+		this.printer = printer;
+	}
+	
+	public void setStepRun(boolean stepRun) {
+		this.stepRun = stepRun;
+	}
+	
+	public void setInputedLine(String inputedLine) {
+		this.inputedLine = inputedLine;
 	}
 	
 	@Override
@@ -62,16 +87,23 @@ public class TKernel implements Runnable {
 	}
 	
 	private void updated() {
-		lock.lock();
+		boolean step = stepRun;
+		if (step) {
+			lock.lock();
+		}
 		try {
 			if (this.runnable != null) {
 				this.runnable.run();
 			}
-			cond.await();
+			if (step) {
+				cond.await();
+			}
 		} catch (Exception e) {
             e.printStackTrace();
         }
-		lock.unlock();
+		if (step) {
+			lock.unlock();
+		}
 	}
 	
 	/*
@@ -115,11 +147,10 @@ public class TKernel implements Runnable {
 	
 	int i = 1;
 	private boolean checkInput() {
-		if (i++ == 10) {
-//			releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, "Random string to print"));
-//			return true;
-//		} else if (i++ % 25 == 0) {
-			releaseResource(ResourceClass.INPUTEDLINE, new TElement(null, null, "LD110"));
+		if (inputedLine != null) {
+			String line = inputedLine;
+			inputedLine = null;
+			releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, line));
 			return true;
 		}
 		return false;

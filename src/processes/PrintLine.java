@@ -28,7 +28,7 @@ public class PrintLine extends TProcess {
 	public void phase3() throws Exception {
 		phase = 1;
 		TElement lineToPrint = getElement(ResourceClass.LINETOPRINT);
-		System.out.println(lineToPrint.getInfo());
+		kernel.print(lineToPrint.getInfo());
 		TElement channelDevice = getElement(ResourceClass.CHANNELDEVICE);
 		kernel.releaseResource(ResourceClass.CHANNELDEVICE, channelDevice);
 	}
