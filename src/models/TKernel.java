@@ -257,6 +257,18 @@ public class TKernel implements Runnable {
 		OSCurrentProc = null;
 	}
 	
+	public void destroyProcess(TProcess process) {
+		System.out.println("Destroy process " + process.getExternalName());
+		process.setpState(TPState.FINISHED);
+		this.OSResources.removeAll(process.getpCResources());
+		this.OSProcesses.removeAll(process.getpCProcesses());
+		if (process.getpParent() != null) {
+			process.getpParent().getpCProcesses().remove(process);
+		}
+		this.OSProcesses.remove(process);
+		this.OSReadyProc.remove(process);
+	}
+	
 	/*
 	 * Resource primitives
 	 */

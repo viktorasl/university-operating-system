@@ -20,6 +20,10 @@ public class TElement {
 		return proc;
 	}
 	
+	public TProcess getCreator() {
+		return creator;
+	}
+	
 	public String getInfo() {
 		return info;
 	}

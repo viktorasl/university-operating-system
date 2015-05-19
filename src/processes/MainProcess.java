@@ -25,9 +25,14 @@ public class MainProcess extends TProcess {
 	public void phase2() throws Exception {
 		phase = 1;
 		TElement programValid = getElement(ResourceClass.PROGRAMVALID);
-		List<TElement> jobHelperElements = new ArrayList<TElement>();
-		jobHelperElements.add(programValid);
-		kernel.createProcess(new JobHelper(kernel, TPState.NEW, this, 0, jobHelperElements));
+		if (programValid.getInfo() != null) {
+			List<TElement> jobHelperElements = new ArrayList<TElement>();
+			jobHelperElements.add(programValid);
+			kernel.createProcess(new JobHelper(kernel, TPState.NEW, this, 0, jobHelperElements));
+		} else {
+			TProcess proc = programValid.getCreator();
+			kernel.destroyProcess(proc);
+		}	
 	}
 
 }

@@ -13,7 +13,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 	TProcess pParent;
 	//TODO: pCPUState
 	int pPriority;
-	PriorityQueue<TProcess> pCProcesses;
+	protected PriorityQueue<TProcess> pCProcesses;
 	List<TResource> pCResources;
 	List<TElement> pORElements;
 	
@@ -73,6 +73,10 @@ public abstract class TProcess implements Comparable<TProcess> {
 	
 	public List<TElement> getpORElements() {
 		return pORElements;
+	}
+	
+	public PriorityQueue<TProcess> getpCProcesses() {
+		return pCProcesses;
 	}
 	
 	@Override

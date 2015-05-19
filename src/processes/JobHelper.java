@@ -16,8 +16,14 @@ public class JobHelper extends TProcess {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void phase1() {
-		kernel.requestResource(this, ResourceClass.INTERRUPTINFO, null);
+	public void phase1() throws Exception {
+		phase = 2;
+		kernel.requestResource(this, ResourceClass.INPUTEDLINE, null);
+	}
+	
+	public void phase2() {
+		phase = 1;
+		kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, null));;
 	}
 	
 }
