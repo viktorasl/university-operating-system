@@ -3,6 +3,7 @@ package models;
 import interrupts.ShutDownInterrupt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -27,12 +28,19 @@ public class TKernel implements Runnable {
 	JTextArea printer;
 	String inputedLine;
 	
+	final int pageSize = 10;
+	final String[] ram = new String[88 * pageSize];
+	final String[] generalMemory = new String[12 * pageSize];
+	
 	Runnable runnable;
 	
 	public TKernel(boolean stepRun) {
 		OSProcesses = new PriorityQueue<TProcess>();
 		OSResources = new LinkedList<TResource>();
 		OSReadyProc = new PriorityQueue<TProcess>();
+		
+		Arrays.fill(ram, "");
+		Arrays.fill(generalMemory, "");
 		
 		this.stepRun = stepRun;
 	}
@@ -62,6 +70,18 @@ public class TKernel implements Runnable {
 		this.printer = printer;
 	}
 	
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public String[] getRam() {
+		return ram;
+	}
+	
+	public String[] getGeneralMemory() {
+		return generalMemory;
+	}
+	
 	public void setStepRun(boolean stepRun) {
 		this.stepRun = stepRun;
 	}
@@ -79,6 +99,7 @@ public class TKernel implements Runnable {
 				this.OSCurrentProc.resume();
 			} catch (Exception e) {
 				print("Good bye!");
+				e.printStackTrace();
 				break;
 			}
 		}

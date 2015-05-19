@@ -22,9 +22,33 @@ public class Validation extends TProcess {
 	}
 	
 	public void phase2() {
-		System.out.println("+++ Reading and analyzing given program code");
+		phase = 3;
+		String[] generalMemory = kernel.getGeneralMemory();
+		
+		//TODO: remove after testing
+		generalMemory[0] = "$TASK";
+		generalMemory[112] = "$END";
+		
+		for (int i = 0; i < generalMemory.length; i++) {
+			if (i == 0 && !generalMemory[i].equalsIgnoreCase("$TASK")) {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format ($TASK missing)"));
+				return;
+			}
+			if (i > 111) {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format (too large)"));
+				return;
+			}
+			if (generalMemory[i].equalsIgnoreCase("$END")) {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is valid"));
+				return;
+			}
+		}
+		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format ($END missing)"));
+	}
+	
+	public void phase3() {
 		phase = 1;
-		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format"));
+		kernel.releaseResource(ResourceClass.GENERALMEMORY, new TElement(null, this, null));
 	}
 
 }
