@@ -77,12 +77,13 @@ public abstract class TProcess implements Comparable<TProcess> {
 	
 	@Override
 	public int compareTo(TProcess o) {
-		if (o.getpPriority() < this.getpPriority()) {
+		if (this.getpPriority() > o.getpPriority()) {
+			return +1;
+		} else if (this.getpPriority() < o.getpPriority()) {
 			return -1;
-		} else if (o.getpPriority() < this.getpPriority()) {
-			return 1;
+		} else {
+			return 0;
 		}
-		return 0;
 	}
 	
 	protected TElement getElement(ResourceClass resClass) throws Exception {
