@@ -1,5 +1,7 @@
 package models;
 
+import interrupts.ShutDownInterrupt;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +78,7 @@ public class TKernel implements Runnable {
 				System.out.println("RESUME " + OSCurrentProc.getExternalName());
 				this.OSCurrentProc.resume();
 			} catch (Exception e) {
-				e.printStackTrace();
+				print("Good bye!");
 				break;
 			}
 		}
@@ -145,12 +147,41 @@ public class TKernel implements Runnable {
 		executePlanner();
 	}
 	
+	private TProcess OSProcessWithId(int id) {
+		for (TProcess proc : OSProcesses) {
+			if (proc.getpID() == id) {
+				return proc;
+			}
+		}
+		return null;
+	}
+	
 	int i = 1;
 	private boolean checkInput() {
 		if (inputedLine != null) {
 			String line = inputedLine;
 			inputedLine = null;
-			releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, line));
+			
+			int spaceIdx = line.indexOf(" ");
+			if (spaceIdx > 0) {
+				String procIdString = line.substring(0, spaceIdx);
+				try {
+					int procId = Integer.valueOf(procIdString);
+					String msg = line.substring(spaceIdx + 1, line.length());
+					TProcess proc = OSProcessWithId(procId);
+					if (proc != null) {
+						print(msg);
+						releaseResource(ResourceClass.INPUTEDLINE, new TElement(proc, null, msg));
+					} else {
+						releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, "Process with id=" + procId + " does not exist"));
+					}
+				} catch (NumberFormatException e) {
+					releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, "Process id should be numeric"));
+				}
+			} else {
+				releaseResource(ResourceClass.LINETOPRINT, new TElement(null, null, "Invalid line format"));
+			}
+			
 			return true;
 		}
 		return false;
