@@ -32,7 +32,7 @@ public class UploadProgram extends TProcess {
 	
 	public void phase4() throws Exception {
 		phase = 5;
-		System.out.println("+++ Copy program to general memory");
+		//TODO: copy program to general memory
 		TElement channelDevice = getElement(ResourceClass.CHANNELDEVICE);
 		kernel.releaseResource(ResourceClass.CHANNELDEVICE, channelDevice);
 	}
