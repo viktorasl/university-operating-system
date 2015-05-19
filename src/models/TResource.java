@@ -17,6 +17,7 @@ public class TResource {
 		LINETOPRINT,
 		INTERRUPTINFO,
 		INTERRUPT,
+		PAGES
 	}
 	
 	final ResourceClass resourceClass;

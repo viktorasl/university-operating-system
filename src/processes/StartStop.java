@@ -31,6 +31,12 @@ public class StartStop extends TProcess {
 		kernel.createResource(this, ResourceClass.INTERRUPTINFO, true, null);
 		kernel.createResource(this, ResourceClass.INTERRUPT, true, null);
 		
+		List<TElement> pages = new ArrayList<TElement>();
+		for (int i = 0; i < 100; i++) {
+			pages.add(new TElement(null, this, String.valueOf(i)));
+		}
+		kernel.createResource(this, ResourceClass.PAGES, true, pages.toArray(new TElement[pages.size()]));
+		
 		phase = 2;
 		kernel.createProcess(new Idle(kernel, TPState.NEW, this, -1, new ArrayList<TElement>()));
 	}
