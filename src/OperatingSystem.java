@@ -31,7 +31,7 @@ public class OperatingSystem extends JFrame {
 		setSize(600, 400);
 		setResizable(false);
 		
-		kernel = new TKernel(true);
+		kernel = new TKernel(false);
 		
 		processesTable = new ProcessesTableModel();
 		getContentPane().add(new JTable(processesTable));
@@ -61,7 +61,7 @@ public class OperatingSystem extends JFrame {
 		});
 		controlPanel.add(resumeButton);
 		
-		final JCheckBox stepRun = new JCheckBox("By step", true);
+		final JCheckBox stepRun = new JCheckBox("By step", false);
 		stepRun.addActionListener((e) -> {
 			kernel.setStepRun(stepRun.isSelected());
 		});
