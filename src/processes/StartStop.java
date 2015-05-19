@@ -51,8 +51,13 @@ public class StartStop extends TProcess {
 	}
 	
 	public void phase5() {
-		phase = 9;
+		phase = 6;
 		kernel.createProcess(new Validation(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+	}
+	
+	public void phase6() {
+		phase = 9;
+		kernel.createProcess(new VMInterrupt(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase9() {
