@@ -325,7 +325,7 @@ public class TKernel implements Runnable {
 		executeDistributor(requestedResDesc);
 	}
 	
-	public void releaseResource(ResourceClass resourceClass, TElement element) {
+	public void releaseResource(ResourceClass resourceClass, TElement[] elements) {
 		TResource releaseResDesc = null;
 		for (TResource res : OSResources) {
 			if (res.getResourceClass() == resourceClass) {
@@ -333,10 +333,16 @@ public class TKernel implements Runnable {
 				break;
 			}
 		}
-		element.assignToResource(releaseResDesc);
-		releaseResDesc.getrAccElem().add(element);
+		for (TElement el : elements) {
+			el.assignToResource(releaseResDesc);
+			releaseResDesc.getrAccElem().add(el);
+		}
 		System.out.println("Release resource " + releaseResDesc.getResourceClass().toString());
 		executeDistributor(releaseResDesc);
+	}
+	
+	public void releaseResource(ResourceClass resourceClass, TElement element) {
+		releaseResource(resourceClass, new TElement[]{ element });
 	}
 	
 }

@@ -90,14 +90,25 @@ public abstract class TProcess implements Comparable<TProcess> {
 		}
 	}
 	
-	protected TElement getElement(ResourceClass resClass) throws Exception {
+	protected TElement[] getElements(ResourceClass resClass, int amount) throws Exception {
+		List<TElement> elements = new LinkedList<TElement>();
 		for (TElement element : pORElements) {
 			if (element.getResource().getResourceClass() == resClass) {
-				pORElements.remove(element);
-				return element;
+				elements.add(element);
+				if (elements.size() == amount) {
+					break;
+				}
 			}
 		}
-		throw new Exception();
+		pORElements.removeAll(elements);
+		if (elements.size() == amount) {
+			return elements.toArray(new TElement[elements.size()]);
+		}
+		throw new Exception("Cannot get " + amount + " " + resClass + " resource elements");
+	}
+	
+	protected TElement getElement(ResourceClass resClass) throws Exception {
+		return getElements(resClass, 1)[0];
 	}
 	
 	public void resume() throws Exception {

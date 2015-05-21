@@ -28,13 +28,19 @@ public class JobHelper extends TProcess {
 	}
 	
 	public void phase2() {
-		phase = 10;
+		phase = 4;
 		kernel.requestResource(this, ResourceClass.INPUTEDLINE, null);
 	}
 	
 	public void phase3() {
-		kernel.releaseResource(ResourceClass.GENERALMEMORY, new TElement(null, this, null));
 		phase = 10;
+		kernel.releaseResource(ResourceClass.GENERALMEMORY, new TElement(null, this, null));
+	}
+	
+	public void phase4() throws Exception {
+		phase = 10;
+		TElement[] vmMemory = getElements(ResourceClass.PAGES, 10);
+		kernel.releaseResource(ResourceClass.PAGES, vmMemory);
 	}
 	
 	public void phase10() {
