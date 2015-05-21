@@ -39,7 +39,7 @@ public class Validation extends TProcess {
 				return;
 			}
 			if (generalMemory[i].equalsIgnoreCase("$END")) {
-				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, "1"));
+				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, "10"));
 				return;
 			}
 		}
