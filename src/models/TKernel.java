@@ -70,8 +70,8 @@ public class TKernel implements Runnable {
 		this.printer = printer;
 	}
 	
-	public int getPageSize() {
-		return pageSize;
+	public int getPagesCount() {
+		return ram.length / pageSize;
 	}
 	
 	public String[] getRam() {

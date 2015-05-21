@@ -32,7 +32,7 @@ public class StartStop extends TProcess {
 		kernel.createResource(this, ResourceClass.INTERRUPT, true, null);
 		
 		List<TElement> pages = new ArrayList<TElement>();
-		for (int i = 0; i < kernel.getPageSize(); i++) {
+		for (int i = 0; i < kernel.getPagesCount(); i++) {
 			pages.add(new TElement(null, this, String.valueOf(i)));
 		}
 		kernel.createResource(this, ResourceClass.PAGES, true, pages.toArray(new TElement[pages.size()]));

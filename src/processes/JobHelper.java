@@ -18,10 +18,26 @@ public class JobHelper extends TProcess {
 	
 	public void phase1() throws Exception {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.INPUTEDLINE, null);
+		int available = kernel.availableResourceElementsFor(this, ResourceClass.PAGES);
+		if (available >= 10) {
+			kernel.requestResource(this, ResourceClass.PAGES, null, 10);
+		} else {
+			phase = 10;
+			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Too low memory to run a program"));
+		}
 	}
 	
 	public void phase2() {
+		phase = 10;
+		kernel.requestResource(this, ResourceClass.INPUTEDLINE, null);
+	}
+	
+	public void phase3() {
+		kernel.releaseResource(ResourceClass.GENERALMEMORY, new TElement(null, this, null));
+		phase = 10;
+	}
+	
+	public void phase10() {
 		phase = 1;
 		kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, null));;
 	}
