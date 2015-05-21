@@ -138,32 +138,40 @@ public class TKernel implements Runnable {
 		System.out.println(resource.getResourceClass().toString() +":"+ resource.getrWaitProcList().size() + " waiting proceses and " + resource.getrAccElem().size() + " available elements");
 		
 		if (resource.getrWaitProcList().size() > 0 && resource.getrAccElem().size() > 0) {
-			List<TProcess> servedProcesses = new LinkedList<TProcess>();
+			List<TWaitingProc> servedProcesses = new LinkedList<TWaitingProc>();
 			
-			List<TElement> usedElements = new LinkedList<TElement>();
-			
-			for (TElement element : resource.getrAccElem()) {
-				for (TWaitingProc waitingProc : resource.getrWaitProcList()) {
-					TProcess dedicatedProc = element.getProc();
-					if (dedicatedProc == waitingProc.getReceiver() || dedicatedProc == null && !servedProcesses.contains(waitingProc.getReceiver())) {
-						TProcess receiver = waitingProc.getReceiver();
-						receiver.getpORElements().add(element);
-						
-						usedElements.add(element);
-						resource.getrWaitProcList().remove(waitingProc);
-						servedProcesses.add(receiver);
-						break;
-					}
-				}	
-			}
-			
-			if (servedProcesses.size() > 0) {
-				resource.getrAccElem().removeAll(usedElements);
+			for (TWaitingProc waitingProc : resource.getrWaitProcList()) {
+				int neededAmount = waitingProc.getAmount();
+				TProcess receiver = waitingProc.getReceiver();
 				
-				for (TProcess process : servedProcesses) {
-					activateProcess(process);
+				// Checking if there are enough available elements for particular waiting process
+				if (neededAmount > 0 && neededAmount <= availableElements(resource, receiver)) {
+					List<TElement> usedElements = new LinkedList<TElement>();
+					
+					// Assigning resource elements to process either if the element is dedicated for it or is for general usage
+					for (TElement el : resource.getrAccElem()) {
+						if (el.getProc() == null || el.getProc() == receiver) {
+							receiver.getpORElements().add(el);
+							usedElements.add(el);
+							neededAmount--;
+						}
+						if (neededAmount <= 0) {
+							break;
+						}
+					}
+					
+					// When process gets enough elements it is flagged as served and will be removed from waiting list
+					servedProcesses.add(waitingProc);
+					// Removing used elements from resource available elements list
+					resource.getrAccElem().removeAll(usedElements);
 				}
 			}
+			
+			for (TWaitingProc process : servedProcesses) {
+				activateProcess(process.getReceiver());
+			}
+			
+			resource.getrWaitProcList().removeAll(servedProcesses);
 		}
 		executePlanner();
 	}
@@ -175,6 +183,25 @@ public class TKernel implements Runnable {
 			}
 		}
 		return null;
+	}
+	
+	private int availableElements(TResource res, TProcess p) {
+		int available = 0;
+		for (TElement el : res.getrAccElem()) {
+			if (el.getProc() == null || el.getProc() == p) {
+				available++;
+			}
+		}
+		return available;
+	}
+	
+	public int availableResourceElementsFor(TProcess process, ResourceClass resourceClass) throws Exception {
+		for (TResource res : OSResources) {
+			if (res.getResourceClass() == resourceClass) {
+				return availableElements(res, process);
+			}
+		}
+		throw new Exception("Resource class " + resourceClass + " does not exist in operating system");
 	}
 	
 	int i = 1;
@@ -281,6 +308,10 @@ public class TKernel implements Runnable {
 	}
 	
 	public void requestResource(TProcess process, ResourceClass resouceClass, String target) {
+		requestResource(process, resouceClass, target, 1);
+	}
+	
+	public void requestResource(TProcess process, ResourceClass resouceClass, String target, int amount) {
 		TResource requestedResDesc = null;
 		for (TResource res : OSResources) {
 			if (res.getResourceClass() == resouceClass) {
@@ -288,7 +319,7 @@ public class TKernel implements Runnable {
 				break;
 			}
 		}
-		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, target));
+		requestedResDesc.getrWaitProcList().add(new TWaitingProc(process, amount, target));
 		System.out.println("Requested resource descriptor " + requestedResDesc.getResourceClass().toString());
 		suspendProcess(process);
 		executeDistributor(requestedResDesc);

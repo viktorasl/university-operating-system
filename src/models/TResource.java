@@ -26,7 +26,6 @@ public class TResource {
 	final boolean rReusable;
 	final List<TElement> rAccElem;
 	final List<TWaitingProc> rWaitProcList;
-	int rAmount;
 	
 	static int autoId = 0;
 	
@@ -40,7 +39,6 @@ public class TResource {
 			element.assignToResource(this);
 		}
 		rWaitProcList = new ArrayList<TWaitingProc>();
-		rAmount = rAccElem.size();
 	}
 	
 	public int getrID() {
@@ -57,6 +55,10 @@ public class TResource {
 	
 	public ArrayList<TElement> getrAccElem() {
 		return (ArrayList<TElement>) rAccElem;
+	}
+	
+	public int getrAmount() {
+		return rAccElem.size();
 	}
 	
 	public List<TWaitingProc> getrWaitProcList() {
