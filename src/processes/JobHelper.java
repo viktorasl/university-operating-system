@@ -47,6 +47,23 @@ public class JobHelper extends TProcess {
 		for (int i = 0; i < needPages; i++) {
 			kernel.getRam().occupyMemory(pageTableTrack, i, vmMemory[i + 1].getInfo());
 		}
+		
+		// Creating virtual machine from program in general memory
+		String[] generalMemory = kernel.getGeneralMemory();
+		int i = 1;
+		int page = 1;
+		int trackIdx = 0;
+		int idxInTrack = 10;
+		while (! generalMemory[i].equalsIgnoreCase("$END")) {
+			if (idxInTrack > 9) {
+				// Getting new page
+				trackIdx = Integer.parseInt(vmMemory[page++].getInfo());
+				idxInTrack = 0;
+			}
+			kernel.getRam().occupyMemory(trackIdx, idxInTrack, generalMemory[i]);
+			idxInTrack++;
+			i++;
+		}
 		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Page table info: " + pageTable.getInfo()));
 	}
 	
