@@ -28,13 +28,14 @@ public class Validation extends TProcess {
 		//TODO: remove after testing
 		generalMemory[0] = "$TASK";
 		generalMemory[1] = "GV002";
-		generalMemory[2] = "AD006";
-		generalMemory[3] = "MM007";
-		generalMemory[4] = "GV007";
+		generalMemory[2] = "AD007";
+		generalMemory[3] = "MM008";
+		generalMemory[4] = "GV008";
 		generalMemory[5] = "PT";
-		generalMemory[6] = "HT";
-		generalMemory[7] = "3";
-		generalMemory[8] = "$END";
+		generalMemory[6] = "GO004";
+		generalMemory[7] = "HT";
+		generalMemory[8] = "3";
+		generalMemory[9] = "$END";
 		
 		for (int i = 0; i < generalMemory.length; i++) {
 			if (i == 0 && !generalMemory[i].equalsIgnoreCase("$TASK")) {

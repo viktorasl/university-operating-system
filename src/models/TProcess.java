@@ -1,6 +1,7 @@
 package models;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -21,6 +22,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 	
 	protected TKernel kernel;
 	static int autoPID = 0;
+	long lastUsing;
 	
 	public TProcess(TKernel kernel, TPState pState, TProcess pParent, int pPriority, List<TElement> pORElements) {
 		this.kernel = kernel;
@@ -38,6 +40,14 @@ public abstract class TProcess implements Comparable<TProcess> {
 	/*
 	 * Getters/Setters
 	 */
+	
+	public void toggleLastUsing() {
+		lastUsing = new Date().getTime();
+	}
+	
+	public long getLastUsing() {
+		return lastUsing;
+	}
 	
 	public String getExternalName() {
 		return getClass().getSimpleName();
@@ -85,6 +95,10 @@ public abstract class TProcess implements Comparable<TProcess> {
 			return -1;
 		} else if (this.getpPriority() < o.getpPriority()) {
 			return +1;
+		} else if (this.getLastUsing() > o.getLastUsing()) {
+			return +1;
+		} else if (this.getLastUsing() < o.getLastUsing()) {
+			return -1;
 		} else {
 			return 0;
 		}
