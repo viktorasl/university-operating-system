@@ -137,7 +137,7 @@ public class Processor extends Registerable {
 		return Integer.valueOf(ram.getMemory(ptr, virtualTrack));
 	}
 	
-	private String getValueInAddress(int addr) {
+	public String getValueInAddress(int addr) {
 		int track = addr / 10;
 		int idx = addr % 10;
 		ram.markMemory(track, idx);
@@ -298,7 +298,13 @@ public class Processor extends Registerable {
 		int idx = pc % 10;
 		String cmd = getValueInAddress(pc);
 		System.out.println(track / 10 + "" + track % 10 + ":" + idx + "\t" + cmd);
-		Thread.sleep(1000);
+//		Thread.sleep(1000);
 		interpretCmd(cmd);
+	}
+
+	public void clearInterruptFlags() {
+		setSi(0);
+		setPi(0);
+		setTi(10);
 	}
 }

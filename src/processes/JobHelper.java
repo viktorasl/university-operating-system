@@ -72,17 +72,18 @@ public class JobHelper extends TProcess {
 		}
 		
 		// TODO: remove
-		kernel.print("Page table info: " + pageTable.getInfo());
+		kernel.print("Page table info: " + pageTable.getInfo() + "; start pc = " + pc);
 		
+		kernel.getProcessor().setPtr(Integer.valueOf(vmMemory[0].getInfo()));
 		kernel.getProcessor().setPc(pc);
+		kernel.getProcessor().clearInterruptFlags();
 	}
 	
 	public void phase5() throws Exception {
 		phase = 4;
 		
-		kernel.getProcessor().setPtr(Integer.valueOf(vmMemory[0].getInfo()));
 		kernel.getProcessor().setMode(1);
-		kernel.getProcessor().setTi(10);
+		
 		try {
 			while (true) {
 				kernel.getProcessor().step();
@@ -107,12 +108,12 @@ public class JobHelper extends TProcess {
 				}
 				case PRINT: {
 					phase = 5;
-					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, String.valueOf(kernel.getProcessor().getAr())));
+					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, kernel.getProcessor().getValueInAddress(kernel.getProcessor().getAr())));
 					break;
 				}
 				case SCAN: {
 					phase = 5;
-					kernel.requestResource(null, ResourceClass.INPUTEDLINE, String.valueOf(kernel.getProcessor().getAr()));
+					kernel.requestResource(this, ResourceClass.INPUTEDLINE, String.valueOf(kernel.getProcessor().getAr()));
 					break;
 				}
 				case TIMER: {
@@ -120,6 +121,8 @@ public class JobHelper extends TProcess {
 					break;
 				}
 			}
+			kernel.getProcessor().clearInterruptFlags();
+			// TODO: save processor registers
 		}
 	}
 	
