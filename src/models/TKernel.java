@@ -1,7 +1,5 @@
 package models;
 
-import interrupts.ShutDownInterrupt;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -13,6 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JTextArea;
 
+import machine.OperativeMemory;
+import machine.Processor;
 import models.TResource.ResourceClass;
 import processes.StartStop;
 
@@ -29,8 +29,9 @@ public class TKernel implements Runnable {
 	String inputedLine;
 	
 	final int pageSize = 10;
-	final String[] ram = new String[88 * pageSize];
 	final String[] generalMemory = new String[12 * pageSize];
+	final OperativeMemory ram = new OperativeMemory(88, pageSize);
+	final Processor processor = new Processor(ram);
 	
 	Runnable runnable;
 	
@@ -39,7 +40,6 @@ public class TKernel implements Runnable {
 		OSResources = new LinkedList<TResource>();
 		OSReadyProc = new PriorityQueue<TProcess>();
 		
-		Arrays.fill(ram, "");
 		Arrays.fill(generalMemory, "");
 		
 		this.stepRun = stepRun;
@@ -70,11 +70,7 @@ public class TKernel implements Runnable {
 		this.printer = printer;
 	}
 	
-	public int getPagesCount() {
-		return ram.length / pageSize;
-	}
-	
-	public String[] getRam() {
+	public OperativeMemory getRam() {
 		return ram;
 	}
 	
