@@ -1,5 +1,8 @@
 package machine;
 
+import machine.interrupts.MachineInterrupt;
+import machine.interrupts.MachineInterrupt.InterruptType;
+
 public class Processor extends Registerable {
 	
 	int mode; // Machine mode
@@ -19,7 +22,7 @@ public class Processor extends Registerable {
 		this.ram = ram;
 	}
 	
-	private void setMode(int mode) {
+	public void setMode(int mode) {
 		if (this.mode != mode) {
 			changes.firePropertyChange(ProcessorRegister.Mode.name(), this.mode, mode);
 			this.mode = mode;
@@ -61,7 +64,7 @@ public class Processor extends Registerable {
 		}
 	}
 	
-	private void setTi(int ti) {
+	public void setTi(int ti) {
 		if (this.ti != ti) {
 			changes.firePropertyChange(ProcessorRegister.TI.name(), this.ti, ti);
 			this.ti = ti;
@@ -82,7 +85,7 @@ public class Processor extends Registerable {
 		}
 	}
 	
-	private void setPc(int pc) {
+	public void setPc(int pc) {
 		if (this.pc != pc) {
 			changes.firePropertyChange(ProcessorRegister.PC.name(), this.pc, pc);
 			this.pc = pc;
@@ -133,18 +136,27 @@ public class Processor extends Registerable {
 		return ram.getMemory(track, idx);
 	}
 	
-	private void test() {
+	private void test() throws MachineInterrupt, Exception {
 		if ((si + pi > 0) || (ti == 0)) {
-			setMode(0);
-			push(pc);
-			push(ptr);
-			push(cf);
-			push(gr);
-			// TODO: Throw interrupt exception
+			switch (si) {
+				case 1: throw new MachineInterrupt(InterruptType.HALT);
+				case 2: throw new MachineInterrupt(InterruptType.PRINT);
+				case 3: throw new MachineInterrupt(InterruptType.SCAN);
+			}
+			switch (pi) {
+				case 1: throw new MachineInterrupt(InterruptType.OUTOFVIRTUALMEMORY);
+				case 2: throw new MachineInterrupt(InterruptType.BADCOMMAND);
+				case 3: throw new MachineInterrupt(InterruptType.REQUESTMEM);
+				case 4: throw new MachineInterrupt(InterruptType.FREEMEM);
+			}
+			if (ti == 0) {
+				throw new MachineInterrupt(InterruptType.TIMER);
+			}
+			throw new Exception("Unexpected interrupt type");
 		}
 	}
 	
-	private void interpretCmd(String cmd) {
+	private void interpretCmd(String cmd) throws MachineInterrupt, Exception {
 		incPc();
 		int cmdLength = 1;
 		
@@ -273,7 +285,7 @@ public class Processor extends Registerable {
 		}
 	}
 	
-	public void step() {
+	public void step() throws MachineInterrupt, Exception {
 		int track = pc / 10;
 		int idx = pc % 10;
 		String cmd = getValueInAddress(pc);

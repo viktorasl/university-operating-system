@@ -70,6 +70,10 @@ public class TKernel implements Runnable {
 		this.printer = printer;
 	}
 	
+	public Processor getProcessor() {
+		return processor;
+	}
+	
 	public OperativeMemory getRam() {
 		return ram;
 	}

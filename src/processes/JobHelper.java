@@ -2,6 +2,7 @@ package processes;
 
 import java.util.List;
 
+import machine.interrupts.MachineInterrupt;
 import models.TElement;
 import models.TKernel;
 import models.TPState;
@@ -64,7 +65,21 @@ public class JobHelper extends TProcess {
 			idxInTrack++;
 			i++;
 		}
-		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Page table info: " + pageTable.getInfo()));
+		
+		// TODO: remove
+		kernel.print("Page table info: " + pageTable.getInfo());
+		
+		kernel.getProcessor().setPc(0);
+		kernel.getProcessor().setMode(1);
+		kernel.getProcessor().setTi(10);
+		try {
+			while (true) {
+				kernel.getProcessor().step();
+			}
+		} catch (MachineInterrupt interrupt) {
+			// TODO: interrupt handling
+			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Received interrupt running virtual machine"));
+		}
 	}
 	
 	public void phase5() {
