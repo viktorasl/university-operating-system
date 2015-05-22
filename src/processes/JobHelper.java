@@ -25,7 +25,7 @@ public class JobHelper extends TProcess {
 		needPages = Integer.parseInt(programValid.getInfo());
 		int available = kernel.availableResourceElementsFor(this, ResourceClass.PAGES);
 		if (available >= needPages + 1) { // +1 because of page table
-			kernel.requestResource(this, ResourceClass.PAGES, null, 10);
+			kernel.requestResource(this, ResourceClass.PAGES, null, needPages + 1);
 		} else {
 			phase = 10;
 			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Too low memory to run a program"));
@@ -35,12 +35,17 @@ public class JobHelper extends TProcess {
 	// Initializing virtual machine
 	public void phase2() throws Exception {
 		phase = 5;
-		vmMemory = getElements(ResourceClass.PAGES, needPages);
+		vmMemory = getElements(ResourceClass.PAGES, needPages + 1);
 		TElement pageTable = vmMemory[0]; // First element is always a page table
 		
 		int pageTableTrack = Integer.parseInt(pageTable.getInfo());
+		// Clear VM page table
+		for (int i = 0; i < kernel.getRam().getTrackSize(); i++) {
+			kernel.getRam().occupyMemory(pageTableTrack, i, String.valueOf(0));
+		}
+		// Fill VM page table
 		for (int i = 0; i < needPages; i++) {
-			kernel.getRam().occupyMemory(pageTableTrack, i, String.valueOf(i));
+			kernel.getRam().occupyMemory(pageTableTrack, i, vmMemory[i + 1].getInfo());
 		}
 		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Page table info: " + pageTable.getInfo()));
 	}
