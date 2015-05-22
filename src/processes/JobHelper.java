@@ -37,6 +37,11 @@ public class JobHelper extends TProcess {
 		phase = 5;
 		vmMemory = getElements(ResourceClass.PAGES, needPages);
 		TElement pageTable = vmMemory[0]; // First element is always a page table
+		
+		int pageTableTrack = Integer.parseInt(pageTable.getInfo());
+		for (int i = 0; i < needPages; i++) {
+			kernel.getRam().occupyMemory(pageTableTrack, i, String.valueOf(i));
+		}
 		kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Page table info: " + pageTable.getInfo()));
 	}
 	

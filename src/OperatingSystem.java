@@ -1,5 +1,6 @@
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -9,7 +10,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
+import machine.MemoryListable;
+import machine.OperativeMemoryChangeListener;
+import machine.OperativeMemoryTable;
 import models.TKernel;
 
 public class OperatingSystem extends JFrame {
@@ -28,13 +34,15 @@ public class OperatingSystem extends JFrame {
 		getContentPane().setLayout(new GridLayout(1, 3));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Operating System simulator");
-		setSize(600, 400);
+		setSize(1024, 640);
 		setResizable(false);
 		
 		kernel = new TKernel(false);
 		
 		processesTable = new ProcessesTableModel();
 		getContentPane().add(new JTable(processesTable));
+		
+		getContentPane().add(initializeMemoryTable(kernel.getRam()));
 		
 		JTextArea printer = new JTextArea();
 		JScrollPane printerScroll = new JScrollPane(printer);
@@ -75,6 +83,37 @@ public class OperatingSystem extends JFrame {
 		controlPanel.add(input);
 		
 		return controlPanel;
+	}
+	
+	private JScrollPane initializeMemoryTable(MemoryListable memory) {
+		String[] columnNames = {"Address", "Content"};
+		final DefaultTableModel table = new OperativeMemoryTable(columnNames, memory);
+		final JTable dataTable = new JTable(table);
+		JScrollPane scrollPane = new JScrollPane(dataTable);
+		
+		scrollPane.setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
+                memory.getTitle(),
+                TitledBorder.CENTER,
+                TitledBorder.TOP));
+		
+		memory.addOperativeMemoryChangeListener(new OperativeMemoryChangeListener() {
+			
+			@Override
+			public void memoryChanged(int track, int idx, String value) {
+				int i = track * memory.getTrackSize() + idx;
+				table.removeRow(i);
+				table.insertRow(i, new Object[]{i, value});
+			}
+
+			@Override
+			public void memoryExecuted(int track, int idx) {
+				int row = track * memory.getTrackSize() + idx;
+				dataTable.changeSelection(row, 0, false, false);
+			}
+			
+		});
+		
+		return scrollPane;
 	}
 	
 	private void update() {
