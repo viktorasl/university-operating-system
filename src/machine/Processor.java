@@ -78,6 +78,10 @@ public class Processor extends Registerable {
 		}
 	}
 	
+	public int getAr() {
+		return ar;
+	}
+	
 	public void setPtr(int ptr) {
 		if (this.ptr != ptr) {
 			changes.firePropertyChange(ProcessorRegister.PTR.name(), this.ptr, ptr);
@@ -90,6 +94,10 @@ public class Processor extends Registerable {
 			changes.firePropertyChange(ProcessorRegister.PC.name(), this.pc, pc);
 			this.pc = pc;
 		}
+	}
+	
+	public int getPc() {
+		return pc;
 	}
 	
 	private void incPc() {
@@ -290,6 +298,7 @@ public class Processor extends Registerable {
 		int idx = pc % 10;
 		String cmd = getValueInAddress(pc);
 		System.out.println(track / 10 + "" + track % 10 + ":" + idx + "\t" + cmd);
+		Thread.sleep(1000);
 		interpretCmd(cmd);
 	}
 }
