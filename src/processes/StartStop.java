@@ -73,7 +73,7 @@ public class StartStop extends TProcess {
 	
 	public void phase9() {
 		phase = 10;
-		this.kernel.requestResource(this, ResourceClass.SHUTDOWN, null); //TODO: request Shutdown resource
+		this.kernel.requestResource(this, ResourceClass.SHUTDOWN, 0); //TODO: request Shutdown resource
 	}
 	
 	public void phase10() throws ShutDownInterrupt {

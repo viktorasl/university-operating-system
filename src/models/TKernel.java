@@ -151,6 +151,7 @@ public class TKernel implements Runnable {
 					// Assigning resource elements to process either if the element is dedicated for it or is for general usage
 					for (TElement el : resource.getrAccElem()) {
 						if (el.getProc() == null || el.getProc() == receiver) {
+							el.setTarget(waitingProc.getTarget());
 							receiver.getpORElements().add(el);
 							usedElements.add(el);
 							neededAmount--;
@@ -311,11 +312,11 @@ public class TKernel implements Runnable {
 		System.out.println("Created resource descriptor " + resourceDesc.getrID());
 	}
 	
-	public void requestResource(TProcess process, ResourceClass resouceClass, String target) {
+	public void requestResource(TProcess process, ResourceClass resouceClass, int target) {
 		requestResource(process, resouceClass, target, 1);
 	}
 	
-	public void requestResource(TProcess process, ResourceClass resouceClass, String target, int amount) {
+	public void requestResource(TProcess process, ResourceClass resouceClass, int target, int amount) {
 		TResource requestedResDesc = null;
 		for (TResource res : OSResources) {
 			if (res.getResourceClass() == resouceClass) {

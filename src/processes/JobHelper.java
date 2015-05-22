@@ -26,7 +26,7 @@ public class JobHelper extends TProcess {
 		needPages = Integer.parseInt(programValid.getInfo());
 		int available = kernel.availableResourceElementsFor(this, ResourceClass.PAGES);
 		if (available >= needPages + 1) { // +1 because of page table
-			kernel.requestResource(this, ResourceClass.PAGES, null, needPages + 1);
+			kernel.requestResource(this, ResourceClass.PAGES, 0, needPages + 1);
 		} else {
 			phase = 10;
 			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Too low memory to run a program"));
@@ -112,8 +112,8 @@ public class JobHelper extends TProcess {
 					break;
 				}
 				case SCAN: {
-					phase = 5;
-					kernel.requestResource(this, ResourceClass.INPUTEDLINE, String.valueOf(kernel.getProcessor().getAr()));
+					phase = 6;
+					kernel.requestResource(this, ResourceClass.INPUTEDLINE, kernel.getProcessor().getAr());
 					break;
 				}
 				case TIMER: {
@@ -124,6 +124,14 @@ public class JobHelper extends TProcess {
 			kernel.getProcessor().clearInterruptFlags();
 			// TODO: save processor registers
 		}
+	}
+	
+	public void phase6() throws Exception {
+		phase = 5;
+		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
+		int addr = inputedLine.getTarget();
+		String info = inputedLine.getInfo().substring(0, Math.min(5, inputedLine.getInfo().length()));
+		kernel.getRam().occupyMemory(addr / 10, addr % 10, info);
 	}
 	
 	public void phase3() {

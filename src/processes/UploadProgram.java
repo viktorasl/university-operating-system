@@ -17,17 +17,17 @@ public class UploadProgram extends TProcess {
 
 	public void phase1() {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.LOADPROGRAM, null);
+		kernel.requestResource(this, ResourceClass.LOADPROGRAM, 0);
 	}
 
 	public void phase2() {
 		phase = 3;
-		kernel.requestResource(this, ResourceClass.GENERALMEMORY, null);
+		kernel.requestResource(this, ResourceClass.GENERALMEMORY, 0);
 	}
 	
 	public void phase3() {
 		phase = 4;
-		kernel.requestResource(this, ResourceClass.CHANNELDEVICE, null);
+		kernel.requestResource(this, ResourceClass.CHANNELDEVICE, 0);
 	}
 	
 	public void phase4() throws Exception {

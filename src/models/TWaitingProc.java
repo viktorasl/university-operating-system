@@ -3,9 +3,9 @@ package models;
 public class TWaitingProc {
 	TProcess receiver;
 	int amount;
-	String target;
+	int target;
 	
-	public TWaitingProc(TProcess receiver, int amount, String target) {
+	public TWaitingProc(TProcess receiver, int amount, int target) {
 		this.receiver = receiver;
 		this.target = target;
 		this.amount = amount;
@@ -17,5 +17,9 @@ public class TWaitingProc {
 	
 	public int getAmount() {
 		return amount;
+	}
+	
+	public int getTarget() {
+		return target;
 	}
 }

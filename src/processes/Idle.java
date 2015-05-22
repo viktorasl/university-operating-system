@@ -16,7 +16,7 @@ public class Idle extends TProcess {
 	}
 
 	public void phase1() {
-		kernel.requestResource(this, ResourceClass.IDLE, null);
+		kernel.requestResource(this, ResourceClass.IDLE, 0);
 	}
 
 }

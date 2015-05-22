@@ -18,7 +18,7 @@ public class Validation extends TProcess {
 	
 	public void phase1() {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.PROGRAMLOADED, null);
+		kernel.requestResource(this, ResourceClass.PROGRAMLOADED, 0);
 	}
 	
 	public void phase2() {
@@ -31,8 +31,8 @@ public class Validation extends TProcess {
 		generalMemory[2] = "AD007";
 		generalMemory[3] = "MM008";
 		generalMemory[4] = "GV008";
-		generalMemory[5] = "PT";
-		generalMemory[6] = "GO004";
+		generalMemory[5] = "SC";
+		generalMemory[6] = "PT";
 		generalMemory[7] = "HT";
 		generalMemory[8] = "3";
 		generalMemory[9] = "$END";

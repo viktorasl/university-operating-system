@@ -17,7 +17,7 @@ public class CommandPrompt extends TProcess {
 
 	public void phase1() {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.INPUTEDLINE, null);
+		kernel.requestResource(this, ResourceClass.INPUTEDLINE, 0);
 	}
 	
 	public void phase2() throws Exception {

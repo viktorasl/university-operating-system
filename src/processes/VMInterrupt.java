@@ -17,7 +17,7 @@ public class VMInterrupt extends TProcess {
 	
 	public void phase1() {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.INTERRUPT, null);
+		kernel.requestResource(this, ResourceClass.INTERRUPT, 0);
 	}
 	
 	public void phase2() throws Exception {

@@ -17,12 +17,12 @@ public class PrintLine extends TProcess {
 	
 	public void phase1() {
 		phase = 2;
-		kernel.requestResource(this, ResourceClass.LINETOPRINT, null);
+		kernel.requestResource(this, ResourceClass.LINETOPRINT, 0);
 	}
 	
 	public void phase2() {
 		phase = 3;
-		kernel.requestResource(this, ResourceClass.CHANNELDEVICE, null);
+		kernel.requestResource(this, ResourceClass.CHANNELDEVICE, 0);
 	}
 	
 	public void phase3() throws Exception {

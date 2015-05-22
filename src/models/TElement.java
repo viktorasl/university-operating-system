@@ -4,6 +4,7 @@ public class TElement {
 	final TProcess proc;
 	final TProcess creator;
 	final String info;
+	int target;
 	TResource resource;
 	
 	public TElement (TProcess proc, TProcess creator, String info) {
@@ -26,6 +27,14 @@ public class TElement {
 	
 	public String getInfo() {
 		return info;
+	}
+	
+	public void setTarget(int target) {
+		this.target = target;
+	}
+	
+	public int getTarget() {
+		return target;
 	}
 	
 	public void assignToResource(TResource resource) {
