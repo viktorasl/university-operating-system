@@ -1,9 +1,14 @@
 import java.awt.GridLayout;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,6 +43,7 @@ public class OperatingSystem extends JFrame {
 		setResizable(false);
 		
 		kernel = new TKernel(false);
+		uploadProgram(new File("demofiles/test1.dm"));
 		
 		processesTable = new ProcessesTableModel();
 		getContentPane().add(new JTable(processesTable));
@@ -60,6 +66,36 @@ public class OperatingSystem extends JFrame {
 		new Thread(kernel).start();
 		
 		setVisible(true);
+	}
+	
+	private void uploadProgram(File f) {
+		FileReader fr = null;
+		try (BufferedReader br = new BufferedReader(fr = new FileReader(f))) {
+		    String line;
+		    int available = 100;
+		    int address = 0; // FIXME: address should be taken from selected HDD row
+		    while ((line = br.readLine()) != null) {
+		       	if (available <= 0) {
+		       		break;
+		       	}
+		       	String ln = line.substring(0, Math.min(5, line.length()));
+		       	kernel.getHdd().occupyMemory(address / 10, address % 10, ln);
+		       	address++;
+		    	available--;
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (fr != null) {
+				try {
+					fr.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private JPanel setupControlPanel() {
@@ -85,6 +121,16 @@ public class OperatingSystem extends JFrame {
 			input.setText("");
 		});
 		controlPanel.add(input);
+		
+		JButton fileUploadBtn = new JButton("Upload file");
+		fileUploadBtn.addActionListener(e -> {
+			final JFileChooser fileChooser = new JFileChooser(".");
+			if (fileChooser.showSaveDialog(controlPanel) == JFileChooser.APPROVE_OPTION) {
+				uploadProgram(fileChooser.getSelectedFile());
+			}
+		});
+		
+		controlPanel.add(fileUploadBtn);
 		
 		return controlPanel;
 	}

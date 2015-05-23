@@ -24,22 +24,7 @@ public class Validation extends TProcess {
 	public void phase2() {
 		phase = 3;
 		String[] generalMemory = kernel.getGeneralMemory();
-		
-		//TODO: remove after testing
-		generalMemory[0] = "$TASK";
-		generalMemory[1] = "GV018";
-		generalMemory[2] = "SC";
-		generalMemory[3] = "GV019";
-		generalMemory[4] = "SC";
-		generalMemory[5] = "MG018";
-		generalMemory[6] = "AD019";
-		generalMemory[7] = "MM017";
-		generalMemory[8] = "GV017";
-		generalMemory[9] = "PT";
-		generalMemory[10] = "GO000";
-		generalMemory[11] = "HT";
-		generalMemory[12] = "$END";
-		
+				
 		for (int i = 0; i < generalMemory.length; i++) {
 			if (i == 0 && !generalMemory[i].equalsIgnoreCase("$TASK")) {
 				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format ($TASK missing)"));
