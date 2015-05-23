@@ -27,15 +27,18 @@ public class Validation extends TProcess {
 		
 		//TODO: remove after testing
 		generalMemory[0] = "$TASK";
-		generalMemory[1] = "GV002";
-		generalMemory[2] = "AD007";
-		generalMemory[3] = "MM008";
-		generalMemory[4] = "GV008";
-		generalMemory[5] = "SC";
-		generalMemory[6] = "PT";
-		generalMemory[7] = "HT";
-		generalMemory[8] = "3";
-		generalMemory[9] = "$END";
+		generalMemory[1] = "GV018";
+		generalMemory[2] = "SC";
+		generalMemory[3] = "GV019";
+		generalMemory[4] = "SC";
+		generalMemory[5] = "MG018";
+		generalMemory[6] = "AD019";
+		generalMemory[7] = "MM017";
+		generalMemory[8] = "GV017";
+		generalMemory[9] = "PT";
+		generalMemory[10] = "GO000";
+		generalMemory[11] = "HT";
+		generalMemory[12] = "$END";
 		
 		for (int i = 0; i < generalMemory.length; i++) {
 			if (i == 0 && !generalMemory[i].equalsIgnoreCase("$TASK")) {
@@ -47,7 +50,7 @@ public class Validation extends TProcess {
 				return;
 			}
 			if (generalMemory[i].equalsIgnoreCase("$END")) {
-				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, "1"));
+				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, "2"));
 				return;
 			}
 		}
