@@ -1,5 +1,6 @@
 package processes;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 import models.TElement;
@@ -9,6 +10,8 @@ import models.TProcess;
 import models.TResource.ResourceClass;
 
 public class CommandPrompt extends TProcess {
+	
+	int start = -1;
 	
 	public CommandPrompt(TKernel kernel, TPState pState, TProcess pParent,
 			int pPriority, List<TElement> pORElements) {
@@ -24,12 +27,30 @@ public class CommandPrompt extends TProcess {
 		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
 		phase = 1;
 		String info = inputedLine.getInfo();
-		if (info.equalsIgnoreCase("SHTDW")) {
-			kernel.releaseResource(ResourceClass.SHUTDOWN, new TElement(null, this, null));
-		} else if (info.startsWith("LD")) {
-			String address = info.substring(2, info.length() - 1);
-			kernel.releaseResource(ResourceClass.LOADPROGRAM, new TElement(null, this, address));
+		try {
+			if (info.equalsIgnoreCase("SHTDW")) {
+				kernel.releaseResource(ResourceClass.SHUTDOWN, new TElement(null, this, null));
+			} else if (info.startsWith("LS")) {
+				String address = info.substring(2, Math.min(info.length(), 5));
+				start = Integer.valueOf(address);
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Start:=" + start));
+			} else if (start >= 0 && info.startsWith("LE")) {
+				String address = info.substring(2, Math.min(info.length(), 5));
+				int end = Integer.valueOf(address);
+				
+				if (end > 1000 || (end - start) > 100 || (end - start) <= 0) {
+					throw new InvalidParameterException("End address is invalid. Setting resetted");
+				}
+				
+				kernel.releaseResource(ResourceClass.LOADPROGRAM, new TElement(null, this, start + ":" + end));
+			}
+		} catch (NumberFormatException e) {
+			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Address should be numeric. Setting resetted"));
+			start = -1;
+		} catch (InvalidParameterException e) {
+			kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, e.getMessage()));
+			start = -1;
 		}
 	}
-
+	
 }
