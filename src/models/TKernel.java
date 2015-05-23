@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JTextArea;
 
+import machine.HardDrive;
 import machine.OperativeMemory;
 import machine.Processor;
 import models.TResource.ResourceClass;
@@ -32,6 +33,7 @@ public class TKernel implements Runnable {
 	final String[] generalMemory = new String[12 * pageSize];
 	final OperativeMemory ram = new OperativeMemory(88, pageSize);
 	final Processor processor = new Processor(ram);
+	final HardDrive hdd = new HardDrive(100, pageSize);
 	
 	Runnable runnable;
 	
@@ -76,6 +78,10 @@ public class TKernel implements Runnable {
 	
 	public OperativeMemory getRam() {
 		return ram;
+	}
+	
+	public HardDrive getHdd() {
+		return hdd;
 	}
 	
 	public String[] getGeneralMemory() {

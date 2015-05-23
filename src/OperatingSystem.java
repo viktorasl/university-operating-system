@@ -42,7 +42,11 @@ public class OperatingSystem extends JFrame {
 		processesTable = new ProcessesTableModel();
 		getContentPane().add(new JTable(processesTable));
 		
-		getContentPane().add(initializeMemoryTable(kernel.getRam()));
+		JPanel memoriesPanel = new JPanel();
+		memoriesPanel.setLayout(new GridLayout(2, 1));
+		memoriesPanel.add(initializeMemoryTable(kernel.getRam()));
+		memoriesPanel.add(initializeMemoryTable(kernel.getHdd()));
+		getContentPane().add(memoriesPanel);
 		
 		JTextArea printer = new JTextArea();
 		JScrollPane printerScroll = new JScrollPane(printer);
