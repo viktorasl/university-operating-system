@@ -2,6 +2,7 @@ package machine;
 
 import machine.interrupts.MachineInterrupt;
 import machine.interrupts.MachineInterrupt.InterruptType;
+import models.TCPUState;
 
 public class Processor extends Registerable {
 	
@@ -306,5 +307,22 @@ public class Processor extends Registerable {
 		setSi(0);
 		setPi(0);
 		setTi(10);
+	}
+	
+	public TCPUState getCPUState() {
+		return new TCPUState(mode, ptr, gr, pc, sp, cf, pi, si, ti, ar);
+	}
+	
+	public void setCPUState(TCPUState state) {
+		setMode(state.mode);
+		setPtr(state.ptr);
+		setGr(state.gr);
+		setPc(state.pc);
+		setSp(state.sp);
+		setCf(state.cf);
+		setPi(state.pi);
+		setSi(state.si);
+		setTi(state.ti);
+		setAr(state.ar);
 	}
 }

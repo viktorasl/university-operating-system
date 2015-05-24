@@ -77,12 +77,14 @@ public class JobHelper extends TProcess {
 		kernel.getProcessor().setPtr(Integer.valueOf(vmMemory[0].getInfo()));
 		kernel.getProcessor().setPc(pc);
 		kernel.getProcessor().clearInterruptFlags();
+		
+		pCPUState = kernel.getProcessor().getCPUState();
 	}
 	
 	public void phase5() throws Exception {
 		phase = 4;
 		
-		//TODO: load saved processor registers
+		kernel.getProcessor().setCPUState(pCPUState);
 		kernel.getProcessor().setMode(1);
 		
 		try {
@@ -123,7 +125,7 @@ public class JobHelper extends TProcess {
 				}
 			}
 			kernel.getProcessor().clearInterruptFlags();
-			// TODO: save processor registers
+			pCPUState = kernel.getProcessor().getCPUState();
 		}
 	}
 	

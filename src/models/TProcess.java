@@ -12,7 +12,7 @@ public abstract class TProcess implements Comparable<TProcess> {
 	TPState pState;
 	int pID;
 	TProcess pParent;
-	//TODO: pCPUState
+	protected TCPUState pCPUState;
 	int pPriority;
 	protected PriorityQueue<TProcess> pCProcesses;
 	List<TResource> pCResources;
