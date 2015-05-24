@@ -249,7 +249,6 @@ public class TKernel implements Runnable {
 		}
 		if (!checkInput()) {
 			if (this.OSReadyProc.size() > 0) {
-				this.startProcess(this.OSReadyProc.element());
 				TProcess headProcess = this.OSReadyProc.poll();
 				headProcess.toggleLastUsing();
 				OSReadyProc.add(headProcess);
