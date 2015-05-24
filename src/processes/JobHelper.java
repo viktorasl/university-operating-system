@@ -82,6 +82,7 @@ public class JobHelper extends TProcess {
 	public void phase5() throws Exception {
 		phase = 4;
 		
+		//TODO: load saved processor registers
 		kernel.getProcessor().setMode(1);
 		
 		try {
