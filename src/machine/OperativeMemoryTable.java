@@ -6,8 +6,11 @@ public class OperativeMemoryTable extends DefaultTableModel {
 
 	private static final long serialVersionUID = -8052788013480634187L;
 
+	final MemoryListable memory;
+	
 	public OperativeMemoryTable(String[] columnNames, MemoryListable memory){
 		super(columnNames, 0);
+		this.memory = memory;
 		
 		for (int i = 0; i < memory.getTracksCount(); i++) {
 			for (int j = 0; j < memory.getTrackSize(); j++) {
@@ -19,6 +22,10 @@ public class OperativeMemoryTable extends DefaultTableModel {
 	@Override
 	public boolean isCellEditable(int row, int column) {                
 		return false;
+	}
+	
+	public MemoryListable getMemory() {
+		return memory;
 	}
 	
 }

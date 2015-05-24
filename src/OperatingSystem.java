@@ -16,9 +16,9 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.DefaultTableModel;
 
 import machine.MemoryListable;
+import machine.MemoryTable;
 import machine.OperativeMemoryChangeListener;
 import machine.OperativeMemoryTable;
 import models.TKernel;
@@ -38,6 +38,7 @@ public class OperatingSystem extends JFrame {
 	final TKernel kernel;
 	final JButton resumeButton = new JButton("Resume");
 	final ProcessesTableModel processesTable;
+	final MemoryTable hddTable;
 	
 	public static void main(String[] args) {
 		new OperatingSystem();
@@ -51,15 +52,15 @@ public class OperatingSystem extends JFrame {
 		setResizable(false);
 		
 		kernel = new TKernel(false);
-		uploadProgram(new File("demofiles/test1.dm"));
 		
 		processesTable = new ProcessesTableModel();
 		getContentPane().add(new JTable(processesTable));
 		
 		JPanel memoriesPanel = new JPanel();
 		memoriesPanel.setLayout(new GridLayout(2, 1));
-		memoriesPanel.add(initializeMemoryTable(kernel.getRam()));
-		memoriesPanel.add(initializeMemoryTable(kernel.getHdd()));
+		memoriesPanel.add(wrapMemoryTable(initializeMemoryTable(kernel.getRam())));
+		hddTable = initializeMemoryTable(kernel.getHdd());
+		memoriesPanel.add(wrapMemoryTable(hddTable));
 		getContentPane().add(memoriesPanel);
 		
 		JTextArea printer = new JTextArea();
@@ -74,14 +75,17 @@ public class OperatingSystem extends JFrame {
 		new Thread(kernel).start();
 		
 		setVisible(true);
+		
+		uploadProgram(new File("demofiles/test1.dm"));
 	}
 	
 	private void uploadProgram(File f) {
 		FileReader fr = null;
+		
 		try (BufferedReader br = new BufferedReader(fr = new FileReader(f))) {
 		    String line;
 		    int available = 100;
-		    int address = 0; // FIXME: address should be taken from selected HDD row
+		    int address = hddTable.getSelectedRow();
 		    while ((line = br.readLine()) != null) {
 		       	if (available <= 0) {
 		       		break;
@@ -143,24 +147,18 @@ public class OperatingSystem extends JFrame {
 		return controlPanel;
 	}
 	
-	private JScrollPane initializeMemoryTable(MemoryListable memory) {
+	private MemoryTable initializeMemoryTable(MemoryListable memory) {
 		String[] columnNames = {"Address", "Content"};
-		final DefaultTableModel table = new OperativeMemoryTable(columnNames, memory);
-		final JTable dataTable = new JTable(table);
-		JScrollPane scrollPane = new JScrollPane(dataTable);
-		
-		scrollPane.setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
-                memory.getTitle(),
-                TitledBorder.CENTER,
-                TitledBorder.TOP));
+		final OperativeMemoryTable tableModel = new OperativeMemoryTable(columnNames, memory);
+		final MemoryTable dataTable = new MemoryTable(tableModel);
 		
 		memory.addOperativeMemoryChangeListener(new OperativeMemoryChangeListener() {
 			
 			@Override
 			public void memoryChanged(int track, int idx, String value) {
 				int i = track * memory.getTrackSize() + idx;
-				table.removeRow(i);
-				table.insertRow(i, new Object[]{i, value});
+				tableModel.removeRow(i);
+				tableModel.insertRow(i, new Object[]{i, value});
 			}
 
 			@Override
@@ -170,6 +168,19 @@ public class OperatingSystem extends JFrame {
 			}
 			
 		});
+		
+		return dataTable;
+	}
+	
+	private JScrollPane wrapMemoryTable(MemoryTable dataTable) {
+		JScrollPane scrollPane = new JScrollPane(dataTable);
+		
+		MemoryListable memory = dataTable.getModel().getMemory();
+		
+		scrollPane.setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
+                memory.getTitle(),
+                TitledBorder.CENTER,
+                TitledBorder.TOP));
 		
 		return scrollPane;
 	}
