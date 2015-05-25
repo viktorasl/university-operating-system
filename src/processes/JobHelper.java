@@ -100,8 +100,10 @@ public class JobHelper extends TProcess {
 					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Invalid command"));
 					break;
 				}
-				case FREEMEM:
+				case FREEMEM: {
+					freeMemory();
 					break;
+				}
 				case REQUESTMEM: {
 					requestMemory();
 					break;
@@ -145,6 +147,24 @@ public class JobHelper extends TProcess {
 			} else {
 				phase = 4;
 				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Too low memory to allocate"));
+			}
+		}
+	}
+	
+	private void freeMemory() throws InterruptedException {
+		phase = 5;
+		
+		int ar = kernel.getProcessor().getAr();
+		String val = kernel.getRam().getMemory(ar / 10, ar % 10);
+		if (!val.equalsIgnoreCase("0")) {
+			for (TElement page : vmMemory) {
+				System.out.println(val + ":" + page.getInfo());
+				if (page.getInfo().equalsIgnoreCase(val)) {
+					vmMemory.remove(page);
+					kernel.getRam().occupyMemory(ar / 10, ar % 10, "0");
+					kernel.releaseResource(ResourceClass.PAGES, page);
+					break;
+				}
 			}
 		}
 	}
