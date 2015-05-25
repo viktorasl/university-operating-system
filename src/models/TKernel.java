@@ -98,7 +98,7 @@ public class TKernel implements Runnable {
 	
 	@Override
 	public void run() {
-		createProcess(new StartStop(this, TPState.NEW, null, 2, new ArrayList<TElement>()));
+		createProcess(new StartStop(this, TPState.READY, null, 2, new ArrayList<TElement>()));
 		while (true) {
 			try {
 				System.out.println("RESUME " + OSCurrentProc.getExternalName());
@@ -269,7 +269,7 @@ public class TKernel implements Runnable {
 			process.getpParent().addChild(process);
 		}
 		System.out.println("Created process " + process.getExternalName());
-		this.activateProcess(process);
+		this.OSReadyProc.add(process);
 		this.executePlanner();
 	}
 	

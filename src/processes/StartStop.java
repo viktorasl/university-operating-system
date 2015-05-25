@@ -38,37 +38,37 @@ public class StartStop extends TProcess {
 		kernel.createResource(this, ResourceClass.PAGES, true, pages.toArray(new TElement[pages.size()]));
 		
 		phase = 2;
-		kernel.createProcess(new Idle(kernel, TPState.NEW, this, -1, new ArrayList<TElement>()));
+		kernel.createProcess(new Idle(kernel, TPState.READY, this, -1, new ArrayList<TElement>()));
 	}
 	
 	public void phase2() {
 		phase = 3;
-		kernel.createProcess(new CommandPrompt(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new CommandPrompt(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase3() {
 		phase = 4;
-		kernel.createProcess(new PrintLine(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new PrintLine(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase4() {
 		phase = 5;
-		kernel.createProcess(new UploadProgram(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new UploadProgram(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase5() {
 		phase = 6;
-		kernel.createProcess(new Validation(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new Validation(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase6() {
 		phase = 7;
-		kernel.createProcess(new MainProcess(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new MainProcess(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase7() {
 		phase = 9;
-		kernel.createProcess(new VMInterrupt(kernel, TPState.NEW, this, 1, new ArrayList<TElement>()));
+		kernel.createProcess(new VMInterrupt(kernel, TPState.READY, this, 1, new ArrayList<TElement>()));
 	}
 	
 	public void phase9() {

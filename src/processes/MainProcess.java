@@ -28,7 +28,7 @@ public class MainProcess extends TProcess {
 		if (programValid.getInfo() != null) {
 			List<TElement> jobHelperElements = new ArrayList<TElement>();
 			jobHelperElements.add(programValid);
-			kernel.createProcess(new JobHelper(kernel, TPState.NEW, this, 0, jobHelperElements));
+			kernel.createProcess(new JobHelper(kernel, TPState.READY, this, 0, jobHelperElements));
 		} else {
 			TProcess proc = programValid.getCreator();
 			kernel.destroyProcess(proc);
