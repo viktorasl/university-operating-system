@@ -77,9 +77,11 @@ public class StartStop extends TProcess {
 	}
 	
 	public void phase10() throws ShutDownInterrupt {
-		System.out.println("Destroy all system processes");
-		System.out.println("Destroy all system resources");
-		throw new ShutDownInterrupt();
+		if (this.getpCProcesses().size() > 0) {
+			kernel.destroyProcess(this.getpCProcesses().poll());
+		} else {
+			throw new ShutDownInterrupt();
+		}
 	}
 	
 }

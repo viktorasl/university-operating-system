@@ -298,7 +298,9 @@ public class TKernel implements Runnable {
 		System.out.println("Destroy process " + process.getExternalName());
 		process.setpState(TPState.FINISHED);
 		this.OSResources.removeAll(process.getpCResources());
-		this.OSProcesses.removeAll(process.getpCProcesses());
+		while (process.getpCProcesses().size() > 0) {
+			destroyProcess(process.getpCProcesses().element());
+		}
 		if (process.getpParent() != null) {
 			process.getpParent().getpCProcesses().remove(process);
 		}
