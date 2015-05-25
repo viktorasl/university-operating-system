@@ -23,10 +23,8 @@ import machine.OperativeMemoryChangeListener;
 import machine.OperativeMemoryTable;
 import models.TKernel;
 
-//TODO: VM procedure (stack) call (CL)
 //TODO: VM PT to hard drive
 //TODO: VM SC from hard drive
-//TODO: interrupt handler process
 //TODO: show assigned resources for each process
 
 public class OperatingSystem extends JFrame {

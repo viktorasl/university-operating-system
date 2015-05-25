@@ -1,7 +1,6 @@
 package machine;
 
 import machine.interrupts.MachineInterrupt;
-import machine.interrupts.MachineInterrupt.InterruptType;
 import models.TCPUState;
 
 public class Processor extends Registerable {
@@ -122,14 +121,16 @@ public class Processor extends Registerable {
 		setPc(this.pc + 1);
 	}
 	
-	private void push(int value) {
-		ram.occupyMemory(sp / 10, sp % 10, String.valueOf(value));
+	private void push(int value) throws OutOfVirtualMemoryException {
+		int addr = buildAddress(String.valueOf(sp));
+		ram.occupyMemory(addr / 10, addr % 10, String.valueOf(value));
 		setSp(sp + 1);
 	}
 	
-	private int pop() {
+	private int pop() throws OutOfVirtualMemoryException {
 		setSp(sp - 1);
-		return Integer.parseInt(ram.getMemory(sp / 10, sp % 10));
+		int addr = buildAddress(String.valueOf(sp));
+		return Integer.parseInt(ram.getMemory(addr / 10, addr % 10));
 	}
 	
 	private int buildAddress(String addr) throws OutOfVirtualMemoryException {
@@ -173,6 +174,11 @@ public class Processor extends Registerable {
 		
 		try {
 			switch(cmd.substring(0, 2)) {
+				case "SP": {
+					int value = Integer.valueOf(cmd.substring(2, 5));
+					setSp(value);
+					return;
+				}
 				case "GO": {
 					int addr = buildAddress(cmd.substring(2, 5));
 					setPc(addr);
