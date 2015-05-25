@@ -23,7 +23,6 @@ import machine.OperativeMemoryChangeListener;
 import machine.OperativeMemoryTable;
 import models.TKernel;
 
-//TODO: free/request virtual memory
 //TODO: VM procedure (stack) call (CL)
 //TODO: VM PT to hard drive
 //TODO: VM SC from hard drive
@@ -75,7 +74,7 @@ public class OperatingSystem extends JFrame {
 		
 		setVisible(true);
 		
-		uploadProgram(new File("demofiles/test1.dm"));
+		uploadProgram(new File("demofiles/testProcedure.dm"));
 	}
 	
 	private void uploadProgram(File f) {
