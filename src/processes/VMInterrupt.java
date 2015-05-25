@@ -25,26 +25,31 @@ public class VMInterrupt extends TProcess {
 		phase = 1;
 		TElement interrupt = getElement(ResourceClass.INTERRUPT);
 		String[] interruptInfo = interrupt.getInfo().split(":");
+		String ar = interruptInfo[3];
 		
 		switch (Integer.valueOf(interruptInfo[0])) {
-			case 1: releaseInfo(interrupt.getCreator(), InterruptType.HALT); return;
-			case 2: releaseInfo(interrupt.getCreator(), InterruptType.PRINT); return;
-			case 3: releaseInfo(interrupt.getCreator(), InterruptType.SCAN); return;
+			case 1: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.HALT, null); return;
+			case 2: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.PRINT, ar); return;
+			case 3: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.SCAN, ar); return;
 		}
 		switch (Integer.valueOf(interruptInfo[1])) {
-			case 1: releaseInfo(interrupt.getCreator(), InterruptType.OUTOFVIRTUALMEMORY); return;
-			case 2: releaseInfo(interrupt.getCreator(), InterruptType.BADCOMMAND); return;
-			case 3: releaseInfo(interrupt.getCreator(), InterruptType.REQUESTMEM); return;
-			case 4: releaseInfo(interrupt.getCreator(), InterruptType.FREEMEM); return;
+			case 1: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.OUTOFVIRTUALMEMORY, null); return;
+			case 2: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.BADCOMMAND, null); return;
+			case 3: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.REQUESTMEM, ar); return;
+			case 4: releaseInfo(interrupt.getCreator().getpParent(), InterruptType.FREEMEM, ar); return;
 		}
 		if (Integer.valueOf(interruptInfo[2]) == 0) {
-			releaseInfo(interrupt.getCreator(), InterruptType.TIMER);
+			releaseInfo(interrupt.getCreator(), InterruptType.TIMER, null);
 		}
 		throw new Exception("Unexpected interrupt type");
 	}
 	
-	private void releaseInfo(TProcess proc, InterruptType type) {
-		kernel.releaseResource(ResourceClass.INTERRUPTINFO, new TElement(proc, this, type.toString()));
+	private void releaseInfo(TProcess proc, InterruptType type, String ar) {
+		String info = type.toString();
+		if (ar != null) {
+			info += ":" + ar;
+		}
+		kernel.releaseResource(ResourceClass.INTERRUPTINFO, new TElement(proc, this, info));
 	}
 	
 }

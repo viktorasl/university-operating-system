@@ -269,14 +269,17 @@ public class TKernel implements Runnable {
 			process.getpParent().addChild(process);
 		}
 		System.out.println("Created process " + process.getExternalName());
+		process.setpCPUState(getProcessor().getCPUState());
 		this.OSReadyProc.add(process);
 		this.executePlanner();
 	}
 	
-	private void activateProcess(TProcess process) {
+	public void activateProcess(TProcess process) {
 		System.out.println("Activated process " + process.getExternalName());
 		process.setpState(TPState.READY);
-		this.OSReadyProc.add(process);
+		if (! OSReadyProc.contains(process)) {
+			this.OSReadyProc.add(process);
+		}
 	}
 	
 	private void startProcess(TProcess process) {
@@ -287,11 +290,10 @@ public class TKernel implements Runnable {
 		updated();
 	}
 	
-	private void suspendProcess(TProcess process) {
+	public void suspendProcess(TProcess process) {
 		System.out.println("Suspend process " + process.getExternalName());
 		process.setpState(TPState.WAITING);
 		this.OSReadyProc.remove(process);
-		OSCurrentProc = null;
 	}
 	
 	public void destroyProcess(TProcess process) {

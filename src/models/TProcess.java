@@ -45,6 +45,10 @@ public abstract class TProcess implements Comparable<TProcess> {
 		lastUsing = new Date().getTime();
 	}
 	
+	public void setpCPUState(TCPUState pCPUState) {
+		this.pCPUState = pCPUState;
+	}
+	
 	public long getLastUsing() {
 		return lastUsing;
 	}
