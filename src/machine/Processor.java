@@ -142,10 +142,6 @@ public class Processor extends Registerable {
 		return ptr * ram.getTrackSize() + Integer.valueOf(num);
 	}
 	
-	private int physicalTrack(int virtualTrack) {
-		return Integer.valueOf(ram.getMemory(ptr, virtualTrack));
-	}
-	
 	public String getValueInAddress(int addr) {
 		int track = addr / 10;
 		int idx = addr % 10;
@@ -155,21 +151,7 @@ public class Processor extends Registerable {
 	
 	private void test() throws MachineInterrupt, Exception {
 		if ((si + pi > 0) || (ti == 0)) {
-			switch (si) {
-				case 1: throw new MachineInterrupt(InterruptType.HALT);
-				case 2: throw new MachineInterrupt(InterruptType.PRINT);
-				case 3: throw new MachineInterrupt(InterruptType.SCAN);
-			}
-			switch (pi) {
-				case 1: throw new MachineInterrupt(InterruptType.OUTOFVIRTUALMEMORY);
-				case 2: throw new MachineInterrupt(InterruptType.BADCOMMAND);
-				case 3: throw new MachineInterrupt(InterruptType.REQUESTMEM);
-				case 4: throw new MachineInterrupt(InterruptType.FREEMEM);
-			}
-			if (ti == 0) {
-				throw new MachineInterrupt(InterruptType.TIMER);
-			}
-			throw new Exception("Unexpected interrupt type");
+			throw new MachineInterrupt("Virtual machine was interrupted");
 		}
 	}
 	

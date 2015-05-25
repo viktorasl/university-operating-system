@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import machine.Processor;
 import machine.interrupts.MachineInterrupt;
+import machine.interrupts.MachineInterrupt.InterruptType;
 import models.TElement;
 import models.TKernel;
 import models.TPState;
@@ -85,7 +87,7 @@ public class JobHelper extends TProcess {
 	}
 	
 	public void phase5() throws Exception {
-		phase = 4;
+		phase = 9;
 		
 		kernel.getProcessor().setCPUState(pCPUState);
 		kernel.getProcessor().setMode(1);
@@ -95,50 +97,17 @@ public class JobHelper extends TProcess {
 				kernel.getProcessor().step();
 			}
 		} catch (MachineInterrupt interrupt) {
-			switch (interrupt.getType()) {
-				case BADCOMMAND: {
-					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Invalid command"));
-					break;
-				}
-				case FREEMEM: {
-					freeMemory();
-					break;
-				}
-				case REQUESTMEM: {
-					requestMemory();
-					break;
-				}
-				case HALT: {
-					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Task successfuly finished"));
-					break;
-				}
-				case OUTOFVIRTUALMEMORY: {
-					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Invalid address, out of memory"));
-					break;
-				}
-				case PRINT: {
-					phase = 5;
-					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, kernel.getProcessor().getValueInAddress(kernel.getProcessor().getAr())));
-					break;
-				}
-				case SCAN: {
-					phase = 6;
-					kernel.requestResource(this, ResourceClass.INPUTEDLINE, kernel.getProcessor().getAr());
-					break;
-				}
-				case TIMER: {
-					phase = 5;
-					break;
-				}
-			}
+			Processor prcs = kernel.getProcessor();
+			String info = prcs.getSi() + ":" + prcs.getPi() + ":" + prcs.getTi();
 			kernel.getProcessor().clearInterruptFlags();
+			kernel.releaseResource(ResourceClass.INTERRUPT, new TElement(null, this, info));
 			pCPUState = kernel.getProcessor().getCPUState();
 		}
 	}
 	
 	private void requestMemory() throws Exception {
 		phase = 5;
-		requestedPageAddr = kernel.getProcessor().getAr();
+		requestedPageAddr = pCPUState.ar;
 		String val = kernel.getRam().getMemory(requestedPageAddr / 10, requestedPageAddr % 10);
 		if (val.equalsIgnoreCase("0")) {
 			if (kernel.availableResourceElementsFor(this, ResourceClass.PAGES) > 0) {
@@ -154,7 +123,7 @@ public class JobHelper extends TProcess {
 	private void freeMemory() throws InterruptedException {
 		phase = 5;
 		
-		int ar = kernel.getProcessor().getAr();
+		int ar = pCPUState.ar;
 		String val = kernel.getRam().getMemory(ar / 10, ar % 10);
 		if (!val.equalsIgnoreCase("0")) {
 			for (TElement page : vmMemory) {
@@ -182,6 +151,53 @@ public class JobHelper extends TProcess {
 		int addr = inputedLine.getTarget();
 		String info = inputedLine.getInfo().substring(0, Math.min(5, inputedLine.getInfo().length()));
 		kernel.getRam().occupyMemory(addr / 10, addr % 10, info);
+	}
+	
+	public void phase9() {
+		phase = 8;
+		kernel.requestResource(this, ResourceClass.INTERRUPTINFO, 0);
+	}
+	
+	public void phase8() throws Exception {
+		phase = 4;
+		TElement interruptInfo = getElement(ResourceClass.INTERRUPTINFO);
+		
+		switch (InterruptType.valueOf(interruptInfo.getInfo())) {
+			case BADCOMMAND: {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Invalid command"));
+				break;
+			}
+			case FREEMEM: {
+				freeMemory();
+				break;
+			}
+			case REQUESTMEM: {
+				requestMemory();
+				break;
+			}
+			case HALT: {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Task successfuly finished"));
+				break;
+			}
+			case OUTOFVIRTUALMEMORY: {
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Invalid address, out of memory"));
+				break;
+			}
+			case PRINT: {
+				phase = 5;
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, kernel.getProcessor().getValueInAddress(pCPUState.ar)));
+				break;
+			}
+			case SCAN: {
+				phase = 6;
+				kernel.requestResource(this, ResourceClass.INPUTEDLINE, pCPUState.ar);
+				break;
+			}
+			case TIMER: {
+				phase = 5;
+				break;
+			}
+		}
 	}
 	
 	public void phase3() {

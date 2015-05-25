@@ -18,14 +18,8 @@ public class MachineInterrupt extends Exception {
 		TIMER
 	}
 	
-	InterruptType type;
-	
-	public MachineInterrupt(InterruptType type) {
-		this.type = type;
+	public MachineInterrupt(String string) {
+		super(string);
 	}
-	
-	public InterruptType getType() {
-		return type;
-	}
-	
+
 }

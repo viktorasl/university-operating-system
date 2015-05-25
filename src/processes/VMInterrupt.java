@@ -2,6 +2,7 @@ package processes;
 
 import java.util.List;
 
+import machine.interrupts.MachineInterrupt.InterruptType;
 import models.TElement;
 import models.TKernel;
 import models.TPState;
@@ -21,11 +22,29 @@ public class VMInterrupt extends TProcess {
 	}
 	
 	public void phase2() throws Exception {
-		TElement interrupt = getElement(ResourceClass.INTERRUPT);
-		System.out.println("+++ Identifying interrupt type");
-		System.out.println("+++ Setting InterruptInfo resource info");
 		phase = 1;
-		// TODO: release INTERRUPTINFO resource for required resource
+		TElement interrupt = getElement(ResourceClass.INTERRUPT);
+		String[] interruptInfo = interrupt.getInfo().split(":");
+		
+		switch (Integer.valueOf(interruptInfo[0])) {
+			case 1: releaseInfo(interrupt.getCreator(), InterruptType.HALT); return;
+			case 2: releaseInfo(interrupt.getCreator(), InterruptType.PRINT); return;
+			case 3: releaseInfo(interrupt.getCreator(), InterruptType.SCAN); return;
+		}
+		switch (Integer.valueOf(interruptInfo[1])) {
+			case 1: releaseInfo(interrupt.getCreator(), InterruptType.OUTOFVIRTUALMEMORY); return;
+			case 2: releaseInfo(interrupt.getCreator(), InterruptType.BADCOMMAND); return;
+			case 3: releaseInfo(interrupt.getCreator(), InterruptType.REQUESTMEM); return;
+			case 4: releaseInfo(interrupt.getCreator(), InterruptType.FREEMEM); return;
+		}
+		if (Integer.valueOf(interruptInfo[2]) == 0) {
+			releaseInfo(interrupt.getCreator(), InterruptType.TIMER);
+		}
+		throw new Exception("Unexpected interrupt type");
+	}
+	
+	private void releaseInfo(TProcess proc, InterruptType type) {
+		kernel.releaseResource(ResourceClass.INTERRUPTINFO, new TElement(proc, this, type.toString()));
 	}
 	
 }
