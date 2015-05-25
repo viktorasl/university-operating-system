@@ -138,6 +138,10 @@ public class Processor extends Registerable {
 		return readAddress;
 	}
 	
+	private int realTrackNum(String num) {
+		return ptr * ram.getTrackSize() + Integer.valueOf(num);
+	}
+	
 	private int physicalTrack(int virtualTrack) {
 		return Integer.valueOf(ram.getMemory(ptr, virtualTrack));
 	}
@@ -258,7 +262,7 @@ public class Processor extends Registerable {
 				}
 				case "RM": {
 					if (mode == 1) {
-						int trackNum = Integer.valueOf(cmd.substring(2, 3));
+						int trackNum = realTrackNum(cmd.substring(2, 3));
 						setAr(trackNum);
 						setPi(3);
 						break;
@@ -266,7 +270,7 @@ public class Processor extends Registerable {
 				}
 				case "FM": {
 					if (mode == 1) {
-						int trackNum = physicalTrack(Integer.valueOf(cmd.substring(2, 3)));
+						int trackNum = realTrackNum(cmd.substring(2, 3));
 						setAr(trackNum);
 						setPi(4);
 						break;

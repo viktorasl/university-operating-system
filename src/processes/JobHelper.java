@@ -136,8 +136,7 @@ public class JobHelper extends TProcess {
 	
 	private void requestMemory() throws Exception {
 		phase = 5;
-		int ptr = kernel.getProcessor().getPtr();
-		requestedPageAddr = ptr + kernel.getProcessor().getAr();
+		requestedPageAddr = kernel.getProcessor().getAr();
 		String val = kernel.getRam().getMemory(requestedPageAddr / 10, requestedPageAddr % 10);
 		if (val.equalsIgnoreCase("0")) {
 			if (kernel.availableResourceElementsFor(this, ResourceClass.PAGES) > 0) {
