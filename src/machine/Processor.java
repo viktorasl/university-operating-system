@@ -51,6 +51,10 @@ public class Processor extends Registerable {
 		}
 	}
 	
+	public int getSi() {
+		return si;
+	}
+	
 	public int getPtr() {
 		return ptr;
 	}
@@ -60,6 +64,10 @@ public class Processor extends Registerable {
 			changes.firePropertyChange(ProcessorRegister.PI.name(), this.pi, pi);
 			this.pi = pi;
 		}
+	}
+	
+	public int getPi() {
+		return pi;
 	}
 	
 	private void setSp(int sp) {
@@ -74,6 +82,10 @@ public class Processor extends Registerable {
 			changes.firePropertyChange(ProcessorRegister.TI.name(), this.ti, ti);
 			this.ti = ti;
 		}
+	}
+	
+	public int getTi() {
+		return ti;
 	}
 	
 	private void setAr(int ar) {

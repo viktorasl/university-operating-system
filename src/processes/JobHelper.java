@@ -76,6 +76,7 @@ public class JobHelper extends TProcess {
 			i++;
 		}
 		
+		kernel.releaseResource(ResourceClass.GENERALMEMORY, new TElement(null, this, null));
 		// TODO: remove
 		kernel.print("Page table info: " + pageTable.getInfo() + "; start pc = " + pc);
 		

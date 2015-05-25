@@ -21,10 +21,11 @@ public class Validation extends TProcess {
 		kernel.requestResource(this, ResourceClass.PROGRAMLOADED, 0);
 	}
 	
-	public void phase2() {
+	public void phase2() throws Exception {
 		phase = 3;
 		String[] generalMemory = kernel.getGeneralMemory();
-				
+		getElement(ResourceClass.PROGRAMLOADED);
+		
 		for (int i = 0; i < generalMemory.length; i++) {
 			if (i == 0 && !generalMemory[i].equalsIgnoreCase("$TASK")) {
 				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Program is not in valid format ($TASK missing)"));
@@ -35,6 +36,7 @@ public class Validation extends TProcess {
 				return;
 			}
 			if (generalMemory[i].equalsIgnoreCase("$END")) {
+				phase = 1;
 				int requiredTracks = (int) Math.ceil((i - 1)/10.);
 				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, String.valueOf(requiredTracks)));
 				return;
