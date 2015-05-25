@@ -35,7 +35,8 @@ public class Validation extends TProcess {
 				return;
 			}
 			if (generalMemory[i].equalsIgnoreCase("$END")) {
-				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, "2"));
+				int requiredTracks = (int) Math.ceil((i - 1)/10.);
+				kernel.releaseResource(ResourceClass.PROGRAMVALID, new TElement(null, this, String.valueOf(requiredTracks)));
 				return;
 			}
 		}

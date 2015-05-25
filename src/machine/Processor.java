@@ -50,6 +50,10 @@ public class Processor extends Registerable {
 			this.si = si;
 		}
 	}
+	
+	public int getPtr() {
+		return ptr;
+	}
 
 	private void setPi(int pi) {
 		if (this.pi != pi) {
@@ -254,7 +258,7 @@ public class Processor extends Registerable {
 				}
 				case "RM": {
 					if (mode == 1) {
-						int trackNum = physicalTrack(Integer.valueOf(cmd.substring(2, 3)));
+						int trackNum = Integer.valueOf(cmd.substring(2, 3));
 						setAr(trackNum);
 						setPi(3);
 						break;

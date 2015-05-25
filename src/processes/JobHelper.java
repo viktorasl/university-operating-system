@@ -1,5 +1,7 @@
 package processes;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import machine.interrupts.MachineInterrupt;
@@ -12,7 +14,8 @@ import models.TResource.ResourceClass;
 public class JobHelper extends TProcess {
 	
 	int needPages;
-	TElement[] vmMemory;
+	List<TElement> vmMemory;
+	int requestedPageAddr;
 	
 	public JobHelper(TKernel kernel, TPState pState, TProcess pParent,
 			int pPriority, List<TElement> pORElements) {
@@ -36,8 +39,8 @@ public class JobHelper extends TProcess {
 	// Initializing virtual machine
 	public void phase2() throws Exception {
 		phase = 5;
-		vmMemory = getElements(ResourceClass.PAGES, needPages + 1);
-		TElement pageTable = vmMemory[0]; // First element is always a page table
+		vmMemory = new LinkedList<TElement>(Arrays.asList(getElements(ResourceClass.PAGES, needPages + 1)));
+		TElement pageTable = vmMemory.get(0); // First element is always a page table
 		
 		int pageTableTrack = Integer.parseInt(pageTable.getInfo());
 		// Clear VM page table
@@ -46,7 +49,7 @@ public class JobHelper extends TProcess {
 		}
 		// Fill VM page table
 		for (int i = 0; i < needPages; i++) {
-			kernel.getRam().occupyMemory(pageTableTrack, i, vmMemory[i + 1].getInfo());
+			kernel.getRam().occupyMemory(pageTableTrack, i, vmMemory.get(i + 1).getInfo());
 		}
 		
 		// Creating virtual machine from program in general memory
@@ -60,7 +63,7 @@ public class JobHelper extends TProcess {
 		while (! generalMemory[i].equalsIgnoreCase("$END")) {
 			if (idxInTrack > 9) {
 				// Getting new page
-				trackIdx = Integer.parseInt(vmMemory[page++].getInfo());
+				trackIdx = Integer.parseInt(vmMemory.get(page++).getInfo());
 				idxInTrack = 0;
 			}
 			if (i == 1) {
@@ -74,7 +77,7 @@ public class JobHelper extends TProcess {
 		// TODO: remove
 		kernel.print("Page table info: " + pageTable.getInfo() + "; start pc = " + pc);
 		
-		kernel.getProcessor().setPtr(Integer.valueOf(vmMemory[0].getInfo()));
+		kernel.getProcessor().setPtr(Integer.valueOf(vmMemory.get(0).getInfo()));
 		kernel.getProcessor().setPc(pc);
 		kernel.getProcessor().clearInterruptFlags();
 		
@@ -99,8 +102,10 @@ public class JobHelper extends TProcess {
 				}
 				case FREEMEM:
 					break;
-				case REQUESTMEM:
+				case REQUESTMEM: {
+					requestMemory();
 					break;
+				}
 				case HALT: {
 					kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Task successfuly finished"));
 					break;
@@ -129,6 +134,29 @@ public class JobHelper extends TProcess {
 		}
 	}
 	
+	private void requestMemory() throws Exception {
+		phase = 5;
+		int ptr = kernel.getProcessor().getPtr();
+		requestedPageAddr = ptr + kernel.getProcessor().getAr();
+		String val = kernel.getRam().getMemory(requestedPageAddr / 10, requestedPageAddr % 10);
+		if (val.equalsIgnoreCase("0")) {
+			if (kernel.availableResourceElementsFor(this, ResourceClass.PAGES) > 0) {
+				phase = 7;
+				kernel.requestResource(this, ResourceClass.PAGES, 0, 1);
+			} else {
+				phase = 4;
+				kernel.releaseResource(ResourceClass.LINETOPRINT, new TElement(null, this, "Too low memory to allocate"));
+			}
+		}
+	}
+	
+	public void phase7() throws Exception {
+		phase = 5;
+		TElement requestedPage = getElement(ResourceClass.PAGES);
+		kernel.getRam().occupyMemory(requestedPageAddr / 10, requestedPageAddr % 10, requestedPage.getInfo());
+		vmMemory.add(requestedPage);
+	}
+	
 	public void phase6() throws Exception {
 		phase = 5;
 		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
@@ -145,7 +173,7 @@ public class JobHelper extends TProcess {
 	// Destroying virtual machine
 	public void phase4() throws Exception {
 		phase = 10;
-		kernel.releaseResource(ResourceClass.PAGES, vmMemory);
+		kernel.releaseResource(ResourceClass.PAGES, vmMemory.toArray(new TElement[vmMemory.size()]));
 	}
 	
 	public void phase10() {
