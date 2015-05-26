@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
+import models.TElement;
 import models.TProcess;
 
 
@@ -10,15 +14,23 @@ public class ProcessesTableModel extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = -5565391086322521610L;
 	
-	TProcess[] processes = new TProcess[]{};
+	final List<String[]> entries = new ArrayList<String[]>();
 	
 	public void setProcesses(TProcess[] processes) {
-		this.processes = processes;
+		entries.clear();
+		for (TProcess process : processes) {
+			String[] processEntry = new String[]{process.getExternalName(), String.valueOf(process.getpID()), process.getpState().toString()};
+			entries.add(processEntry);
+			for (TElement element : process.getpORElements()) {
+				String[] elementEntry = new String[]{"", "", element.getResource().getResourceClass().toString()};
+				entries.add(elementEntry);
+			}
+		}
 	}
 
 	@Override
 	public int getRowCount() {
-		return processes.length;
+		return entries.size();
 	}
 
 	@Override
@@ -34,13 +46,7 @@ public class ProcessesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		TProcess process = processes[rowIndex];
-		switch (columnIndex) {
-			case 0: return process.getExternalName();
-			case 1: return process.getpID();
-			case 2: return process.getpState().toString();
-		}
-		return null;
+		return entries.get(rowIndex)[columnIndex];
 	}
 
 }

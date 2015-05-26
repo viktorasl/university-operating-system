@@ -16,7 +16,13 @@ public class Idle extends TProcess {
 	}
 
 	public void phase1() {
+		phase = 2;
 		kernel.requestResource(this, ResourceClass.IDLE, 0);
+	}
+	
+	public void phase2() throws Exception {
+		phase = 1;
+		getElement(ResourceClass.IDLE);
 	}
 
 }

@@ -67,7 +67,12 @@ public class OperatingSystem extends JFrame {
 		
 		getContentPane().add(setupControlPanel());
 		
-		kernel.onUpdate(() -> update());
+		kernel.onUpdate(() -> {update(); try {
+			Thread.sleep(10);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}});
 		new Thread(kernel).start();
 		
 		setVisible(true);
