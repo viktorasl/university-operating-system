@@ -1,12 +1,12 @@
-package processes;
+package mifos.models.processes;
 
 import java.util.List;
 
-import models.TElement;
-import models.TKernel;
-import models.TPState;
-import models.TProcess;
-import models.TResource.ResourceClass;
+import mifos.models.TElement;
+import mifos.models.TKernel;
+import mifos.models.TPState;
+import mifos.models.TProcess;
+import mifos.models.TResource.ResourceClass;
 
 public class UploadProgram extends TProcess {
 
@@ -33,7 +33,7 @@ public class UploadProgram extends TProcess {
 	public void phase4() throws Exception {
 		phase = 5;
 		TElement loadProgram = getElement(ResourceClass.LOADPROGRAM);
-		TElement generalMem = getElement(ResourceClass.GENERALMEMORY);
+		getElement(ResourceClass.GENERALMEMORY);
 		String[] addresses = loadProgram.getInfo().split(":");
 		int start = Integer.valueOf(addresses[0]);
 		int end = Integer.valueOf(addresses[1]);

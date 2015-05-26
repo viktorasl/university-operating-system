@@ -1,10 +1,11 @@
+package mifos;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import models.TElement;
-import models.TProcess;
+import mifos.models.TElement;
+import mifos.models.TProcess;
 
 
 public class ProcessesTableModel extends AbstractTableModel {

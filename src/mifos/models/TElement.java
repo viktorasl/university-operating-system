@@ -1,4 +1,4 @@
-package models;
+package mifos.models;
 
 public class TElement {
 	final TProcess proc;

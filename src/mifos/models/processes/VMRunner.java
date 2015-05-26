@@ -1,14 +1,14 @@
-package processes;
+package mifos.models.processes;
 
 import java.util.List;
 
 import machine.Processor;
 import machine.interrupts.MachineInterrupt;
-import models.TElement;
-import models.TKernel;
-import models.TPState;
-import models.TProcess;
-import models.TResource.ResourceClass;
+import mifos.models.TElement;
+import mifos.models.TKernel;
+import mifos.models.TPState;
+import mifos.models.TProcess;
+import mifos.models.TResource.ResourceClass;
 
 public class VMRunner extends TProcess {
 

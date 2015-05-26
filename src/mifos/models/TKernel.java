@@ -1,4 +1,4 @@
-package models;
+package mifos.models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +14,8 @@ import javax.swing.JTextArea;
 import machine.HardDrive;
 import machine.OperativeMemory;
 import machine.Processor;
-import models.TResource.ResourceClass;
-import processes.StartStop;
+import mifos.models.TResource.ResourceClass;
+import mifos.models.processes.StartStop;
 
 public class TKernel implements Runnable {
 	final PriorityQueue<TProcess> OSProcesses;

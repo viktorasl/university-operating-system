@@ -1,4 +1,4 @@
-package models;
+package mifos.models;
 
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import models.TResource.ResourceClass;
+import mifos.models.TResource.ResourceClass;
 
 public abstract class TProcess implements Comparable<TProcess> {
 	TPState pState;

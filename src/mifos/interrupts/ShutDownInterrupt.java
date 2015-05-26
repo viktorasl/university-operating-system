@@ -1,6 +1,6 @@
-package interrupts;
+package mifos.interrupts;
 
-public class ShutDownInterrupt extends ProcessInterrupt {
+public class ShutDownInterrupt extends Exception {
 
 	/**
 	 * 

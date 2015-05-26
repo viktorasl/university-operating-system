@@ -1,4 +1,4 @@
-package models;
+package mifos.models;
 
 public class TWaitingProc {
 	TProcess receiver;

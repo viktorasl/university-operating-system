@@ -1,3 +1,4 @@
+package mifos;
 import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,7 +22,7 @@ import machine.MemoryListable;
 import machine.MemoryTable;
 import machine.OperativeMemoryChangeListener;
 import machine.OperativeMemoryTable;
-import models.TKernel;
+import mifos.models.TKernel;
 
 //TODO: VM PT to hard drive
 //TODO: VM SC from hard drive

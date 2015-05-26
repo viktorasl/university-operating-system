@@ -1,4 +1,4 @@
-package models;
+package mifos.models;
 
 public enum TPState {
 	READY,

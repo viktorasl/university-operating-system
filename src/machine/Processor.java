@@ -1,7 +1,7 @@
 package machine;
 
 import machine.interrupts.MachineInterrupt;
-import models.TCPUState;
+import mifos.models.TCPUState;
 
 public class Processor extends Registerable {
 	

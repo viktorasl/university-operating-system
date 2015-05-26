@@ -1,15 +1,14 @@
-package processes;
-
-import interrupts.ShutDownInterrupt;
+package mifos.models.processes;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import models.TElement;
-import models.TKernel;
-import models.TPState;
-import models.TProcess;
-import models.TResource.ResourceClass;
+import mifos.interrupts.ShutDownInterrupt;
+import mifos.models.TElement;
+import mifos.models.TKernel;
+import mifos.models.TPState;
+import mifos.models.TProcess;
+import mifos.models.TResource.ResourceClass;
 
 public class StartStop extends TProcess {
 

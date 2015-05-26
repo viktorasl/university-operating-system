@@ -1,13 +1,13 @@
-package processes;
+package mifos.models.processes;
 
 import java.security.InvalidParameterException;
 import java.util.List;
 
-import models.TElement;
-import models.TKernel;
-import models.TPState;
-import models.TProcess;
-import models.TResource.ResourceClass;
+import mifos.models.TElement;
+import mifos.models.TKernel;
+import mifos.models.TPState;
+import mifos.models.TProcess;
+import mifos.models.TResource.ResourceClass;
 
 public class CommandPrompt extends TProcess {
 	
