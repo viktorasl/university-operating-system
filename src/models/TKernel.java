@@ -157,7 +157,6 @@ public class TKernel implements Runnable {
 					// Assigning resource elements to process either if the element is dedicated for it or is for general usage
 					for (TElement el : resource.getrAccElem()) {
 						if (el.getProc() == null || el.getProc() == receiver) {
-							el.setTarget(waitingProc.getTarget());
 							receiver.getpORElements().add(el);
 							usedElements.add(el);
 							neededAmount--;

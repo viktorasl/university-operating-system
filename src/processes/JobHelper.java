@@ -16,6 +16,7 @@ public class JobHelper extends TProcess {
 	int needPages;
 	List<TElement> vmMemory;
 	int requestedPageAddr;
+	int inputedLineTarget;
 	
 	public JobHelper(TKernel kernel, TPState pState, TProcess pParent,
 			int pPriority, List<TElement> pORElements) {
@@ -134,7 +135,7 @@ public class JobHelper extends TProcess {
 	public void phase6() throws Exception {
 		phase = 5;
 		TElement inputedLine = getElement(ResourceClass.INPUTEDLINE);
-		int addr = inputedLine.getTarget();
+		int addr = inputedLineTarget;
 		String info = inputedLine.getInfo().substring(0, Math.min(5, inputedLine.getInfo().length()));
 		kernel.getRam().occupyMemory(addr / 10, addr % 10, info);
 	}
@@ -163,7 +164,8 @@ public class JobHelper extends TProcess {
 			}
 			case SCAN: {
 				phase = 6;
-				kernel.requestResource(this, ResourceClass.INPUTEDLINE, Integer.valueOf(infoParts[1]));
+				inputedLineTarget = Integer.valueOf(infoParts[1]);
+				kernel.requestResource(this, ResourceClass.INPUTEDLINE, inputedLineTarget);
 				break;
 			}
 			case TIMER: {
